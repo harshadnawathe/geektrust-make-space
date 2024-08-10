@@ -9,7 +9,7 @@ import (
 func Test_Workplace_AvailableRooms_Returns_EmptyList(t *testing.T) {
 	w := workplace.New()
 
-	vacancies := w.AvailableRooms(workplace.Period{})
+	vacancies := w.AvailableRooms(workplace.PeriodForTest("10:00", "12:00"))
 
 	want := 0
 	if got := len(vacancies); want != got {
@@ -22,7 +22,7 @@ func Test_Workplace_AvailableRooms_Returns_AllRooms(t *testing.T) {
 	w.AddRoom("C-Cave")
 	w.AddRoom("D-Tower")
 
-	got := w.AvailableRooms(workplace.Period{})
+	got := w.AvailableRooms(workplace.PeriodForTest("10:00", "12:00"))
 
 	want := []workplace.Vacancy{{Room: "C-Cave"}, {Room: "D-Tower"}}
 	if !reflect.DeepEqual(want, got) {
@@ -34,12 +34,8 @@ func Test_Workplace_AvailableRooms_DuringBufferTime(t *testing.T) {
 	w := workplace.New()
 	w.AddRoom("C-Cave")
 	w.AddRoom("D-Tower")
-	w.AddBufferTime(workplace.NewPeriod(
-		workplace.NewTime(9, 0), workplace.NewTime(9, 15),
-	))
-	w.AddBufferTime(workplace.NewPeriod(
-		workplace.NewTime(13, 15), workplace.NewTime(13, 45),
-	))
+	w.AddBufferTime(workplace.PeriodForTest("09:00", "09:15"))
+	w.AddBufferTime(workplace.PeriodForTest("13:15", "13:45"))
 
 	tests := []struct {
 		Name   string
@@ -48,37 +44,37 @@ func Test_Workplace_AvailableRooms_DuringBufferTime(t *testing.T) {
 	}{
 		{
 			Name:   "empty when start time is buffer time start",
-			Period: workplace.NewPeriod(workplace.NewTime(9, 0), workplace.NewTime(10, 0)),
+			Period: workplace.PeriodForTest("09:00", "10:00"),
 			Want:   0,
 		},
 		{
 			Name:   "empty when end time is buffer time end",
-			Period: workplace.NewPeriod(workplace.NewTime(8, 0), workplace.NewTime(9, 15)),
+			Period: workplace.PeriodForTest("08:00", "09:15"),
 			Want:   0,
 		},
 		{
 			Name:   "empty when start time in buffer time",
-			Period: workplace.NewPeriod(workplace.NewTime(9, 5), workplace.NewTime(9, 30)),
+			Period: workplace.PeriodForTest("09:05", "10:00"),
 			Want:   0,
 		},
 		{
 			Name:   "empty when end time in buffer time",
-			Period: workplace.NewPeriod(workplace.NewTime(8, 0), workplace.NewTime(9, 5)),
+			Period: workplace.PeriodForTest("08:00", "09:05"),
 			Want:   0,
 		},
 		{
 			Name:   "empty when buffer time in period",
-			Period: workplace.NewPeriod(workplace.NewTime(13, 0), workplace.NewTime(14, 0)),
+			Period: workplace.PeriodForTest("13:00", "14:00"),
 			Want:   0,
 		},
 		{
 			Name:   "not empty when start time is buffer end time",
-			Period: workplace.NewPeriod(workplace.NewTime(9, 15), workplace.NewTime(9, 30)),
+			Period: workplace.PeriodForTest("09:15", "10:00"),
 			Want:   2,
 		},
 		{
 			Name:   "not empty when end time is buffer start time",
-			Period: workplace.NewPeriod(workplace.NewTime(8, 0), workplace.NewTime(9, 00)),
+			Period: workplace.PeriodForTest("08:00", "09:00"),
 			Want:   2,
 		},
 	}
