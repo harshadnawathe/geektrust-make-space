@@ -7,6 +7,7 @@
 - Add room struct
 - Support for multiple buf times
 - Validation for Period
+- Validation for Time
 
 ## Questions / Ideas to revisit
 

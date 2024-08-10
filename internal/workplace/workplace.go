@@ -38,19 +38,11 @@ func NewPeriod(start Time, end Time) Period {
 }
 
 func isOverlapping(p1 Period, p2 Period) bool {
-	return isTimeEqual(p1.start, p2.start) ||
-		isTimeEqual(p1.end, p2.end) ||
-		(isTimeBefore(p1.start, p2.start) && isTimeBefore(p2.start, p1.end)) ||
-		(isTimeBefore(p1.start, p2.end) && isTimeBefore(p2.end, p1.end)) ||
-		(isTimeBefore(p2.start, p1.start) && isTimeBefore(p1.end, p2.end))
+	return isTimeBefore(p1.start, p2.end) && isTimeBefore(p2.start, p1.end)
 }
 
 type Time struct {
 	hh, mm uint8
-}
-
-func isTimeEqual(t1, t2 Time) bool {
-	return t1.hh == t2.hh && t1.mm == t2.mm
 }
 
 func isTimeBefore(t1, t2 Time) bool {
