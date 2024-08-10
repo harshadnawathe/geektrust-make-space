@@ -25,7 +25,8 @@ func (wp *Workplace) AddBufferTime(p Period) {
 
 func (wp *Workplace) AvailableRooms(p Period) []Vacancy {
 	if len(wp.bufTime) > 0 {
-		if isTimeEqual(wp.bufTime[0].start, p.start) {
+		if isTimeEqual(wp.bufTime[0].start, p.start) ||
+			isTimeEqual(wp.bufTime[0].end, p.end) {
 			return nil
 		}
 	}
