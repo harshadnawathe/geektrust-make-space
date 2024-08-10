@@ -58,6 +58,11 @@ func Test_Workplace_AvailableRooms_DuringBufferTime(t *testing.T) {
 			Period: workplace.NewPeriod(workplace.NewTime(9, 5), workplace.NewTime(9, 30)),
 			Want:   0,
 		},
+		{
+			Name:   "empty when end time in buffer time",
+			Period: workplace.NewPeriod(workplace.NewTime(8, 0), workplace.NewTime(9, 5)),
+			Want:   0,
+		},
 	}
 
 	for _, test := range tests {

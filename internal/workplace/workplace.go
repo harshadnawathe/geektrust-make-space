@@ -27,7 +27,8 @@ func (wp *Workplace) AvailableRooms(p Period) []Vacancy {
 	if len(wp.bufTime) > 0 {
 		if isTimeEqual(wp.bufTime[0].start, p.start) ||
 			isTimeEqual(wp.bufTime[0].end, p.end) ||
-			(isTimeBefore(wp.bufTime[0].start, p.start) && isTimeBefore(p.start, wp.bufTime[0].end)) {
+			(isTimeBefore(wp.bufTime[0].start, p.start) && isTimeBefore(p.start, wp.bufTime[0].end)) ||
+			(isTimeBefore(wp.bufTime[0].start, p.end) && isTimeBefore(p.end, wp.bufTime[0].end)) {
 			return nil
 		}
 	}
