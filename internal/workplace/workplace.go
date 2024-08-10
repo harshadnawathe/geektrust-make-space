@@ -25,11 +25,7 @@ func (wp *Workplace) AddBufferTime(p Period) {
 
 func (wp *Workplace) AvailableRooms(p Period) []Vacancy {
 	if len(wp.bufTime) > 0 {
-		if isTimeEqual(wp.bufTime[0].start, p.start) ||
-			isTimeEqual(wp.bufTime[0].end, p.end) ||
-			(isTimeBefore(wp.bufTime[0].start, p.start) && isTimeBefore(p.start, wp.bufTime[0].end)) ||
-			(isTimeBefore(wp.bufTime[0].start, p.end) && isTimeBefore(p.end, wp.bufTime[0].end)) ||
-			(isTimeBefore(p.start, wp.bufTime[0].start) && isTimeBefore(wp.bufTime[0].end, p.end)) {
+		if isOverlapping(wp.bufTime[0], p) {
 			return nil
 		}
 	}
@@ -39,6 +35,14 @@ func (wp *Workplace) AvailableRooms(p Period) []Vacancy {
 
 func NewPeriod(start Time, end Time) Period {
 	return Period{start, end}
+}
+
+func isOverlapping(p1 Period, p2 Period) bool {
+	return isTimeEqual(p1.start, p2.start) ||
+		isTimeEqual(p1.end, p2.end) ||
+		(isTimeBefore(p1.start, p2.start) && isTimeBefore(p2.start, p1.end)) ||
+		(isTimeBefore(p1.start, p2.end) && isTimeBefore(p2.end, p1.end)) ||
+		(isTimeBefore(p2.start, p1.start) && isTimeBefore(p1.end, p2.end))
 }
 
 type Time struct {
