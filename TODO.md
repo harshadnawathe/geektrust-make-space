@@ -3,8 +3,8 @@
 ## TODO Items
 
 - Need builder for workplace.Period
-- Room capacity
-- Add room struct
+~- Room capacity~
+~- Add room struct~
 ~- Support for multiple buf times~
 - Validation for Period
 - Validation for Time

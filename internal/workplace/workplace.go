@@ -1,6 +1,10 @@
 package workplace
 
-type Vacancy struct{ Room string }
+import "sort"
+
+type Vacancy struct {
+	Room string
+}
 
 type Period struct {
 	start, end Time
@@ -8,15 +12,18 @@ type Period struct {
 
 type Workplace struct {
 	bufTimes []Period
-	v        []Vacancy
+	rooms    []room
 }
 
 func New() *Workplace {
 	return &Workplace{}
 }
 
-func (wp *Workplace) AddRoom(s string) {
-	wp.v = append(wp.v, Vacancy{Room: s})
+func (wp *Workplace) AddRoom(name string, capacity int) {
+	wp.rooms = append(wp.rooms, room{name, capacity})
+	sort.Slice(wp.rooms, func(i, j int) bool {
+		return wp.rooms[i].capacity < wp.rooms[j].capacity
+	})
 }
 
 func (wp *Workplace) AddBufferTime(p Period) {
@@ -30,7 +37,11 @@ func (wp *Workplace) AvailableRooms(p Period) []Vacancy {
 		}
 	}
 
-	return wp.v
+	var vacancies []Vacancy
+	for _, room := range wp.rooms {
+		vacancies = append(vacancies, Vacancy{room.name})
+	}
+	return vacancies
 }
 
 func NewPeriod(start Time, end Time) Period {
@@ -51,4 +62,9 @@ func isTimeBefore(t1, t2 Time) bool {
 
 func NewTime(hh uint8, mm uint8) Time {
 	return Time{hh, mm}
+}
+
+type room struct {
+	name     string
+	capacity int
 }

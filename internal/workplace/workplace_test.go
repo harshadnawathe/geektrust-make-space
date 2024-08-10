@@ -19,8 +19,21 @@ func Test_Workplace_AvailableRooms_Returns_EmptyList(t *testing.T) {
 
 func Test_Workplace_AvailableRooms_Returns_AllRooms(t *testing.T) {
 	w := workplace.New()
-	w.AddRoom("C-Cave")
-	w.AddRoom("D-Tower")
+	w.AddRoom("C-Cave", 3)
+	w.AddRoom("D-Tower", 7)
+
+	got := w.AvailableRooms(workplace.PeriodForTest("10:00", "12:00"))
+
+	want := []workplace.Vacancy{{Room: "C-Cave"}, {Room: "D-Tower"}}
+	if !reflect.DeepEqual(want, got) {
+		t.Errorf("AvailableRooms()= %v, want= %v", got, want)
+	}
+}
+
+func Test_Workplace_AvailableRooms_Returns_AllRooms_InSortedOrderOfCapacity(t *testing.T) {
+	w := workplace.New()
+	w.AddRoom("D-Tower", 7)
+	w.AddRoom("C-Cave", 3)
 
 	got := w.AvailableRooms(workplace.PeriodForTest("10:00", "12:00"))
 
@@ -32,8 +45,8 @@ func Test_Workplace_AvailableRooms_Returns_AllRooms(t *testing.T) {
 
 func Test_Workplace_AvailableRooms_DuringBufferTime(t *testing.T) {
 	w := workplace.New()
-	w.AddRoom("C-Cave")
-	w.AddRoom("D-Tower")
+	w.AddRoom("C-Cave", 3)
+	w.AddRoom("D-Tower", 7)
 	w.AddBufferTime(workplace.PeriodForTest("09:00", "09:15"))
 	w.AddBufferTime(workplace.PeriodForTest("13:15", "13:45"))
 
