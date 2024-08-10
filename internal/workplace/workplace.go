@@ -26,7 +26,8 @@ func (wp *Workplace) AddBufferTime(p Period) {
 func (wp *Workplace) AvailableRooms(p Period) []Vacancy {
 	if len(wp.bufTime) > 0 {
 		if isTimeEqual(wp.bufTime[0].start, p.start) ||
-			isTimeEqual(wp.bufTime[0].end, p.end) {
+			isTimeEqual(wp.bufTime[0].end, p.end) ||
+			(isTimeBefore(wp.bufTime[0].start, p.start) && isTimeBefore(p.start, wp.bufTime[0].end)) {
 			return nil
 		}
 	}
@@ -44,6 +45,10 @@ type Time struct {
 
 func isTimeEqual(t1, t2 Time) bool {
 	return t1.hh == t2.hh && t1.mm == t2.mm
+}
+
+func isTimeBefore(t1, t2 Time) bool {
+	return t1.hh < t2.hh || (t1.hh == t2.hh && t1.mm < t2.mm)
 }
 
 func NewTime(hh uint8, mm uint8) Time {
