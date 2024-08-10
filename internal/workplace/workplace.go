@@ -7,8 +7,8 @@ type Period struct {
 }
 
 type Workplace struct {
-	bufTime []Period
-	v       []Vacancy
+	bufTimes []Period
+	v        []Vacancy
 }
 
 func New() *Workplace {
@@ -20,12 +20,12 @@ func (wp *Workplace) AddRoom(s string) {
 }
 
 func (wp *Workplace) AddBufferTime(p Period) {
-	wp.bufTime = append(wp.bufTime, p)
+	wp.bufTimes = append(wp.bufTimes, p)
 }
 
 func (wp *Workplace) AvailableRooms(p Period) []Vacancy {
-	if len(wp.bufTime) > 0 {
-		if isOverlapping(wp.bufTime[0], p) {
+	for _, bufTime := range wp.bufTimes {
+		if isOverlapping(bufTime, p) {
 			return nil
 		}
 	}

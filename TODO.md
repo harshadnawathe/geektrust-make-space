@@ -5,7 +5,7 @@
 - Need builder for workplace.Period
 - Room capacity
 - Add room struct
-- Support for multiple buf times
+~- Support for multiple buf times~
 - Validation for Period
 - Validation for Time
 

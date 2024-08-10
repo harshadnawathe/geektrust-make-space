@@ -37,6 +37,9 @@ func Test_Workplace_AvailableRooms_DuringBufferTime(t *testing.T) {
 	w.AddBufferTime(workplace.NewPeriod(
 		workplace.NewTime(9, 0), workplace.NewTime(9, 15),
 	))
+	w.AddBufferTime(workplace.NewPeriod(
+		workplace.NewTime(13, 15), workplace.NewTime(13, 45),
+	))
 
 	tests := []struct {
 		Name   string
@@ -65,7 +68,7 @@ func Test_Workplace_AvailableRooms_DuringBufferTime(t *testing.T) {
 		},
 		{
 			Name:   "empty when buffer time in period",
-			Period: workplace.NewPeriod(workplace.NewTime(8, 0), workplace.NewTime(9, 30)),
+			Period: workplace.NewPeriod(workplace.NewTime(13, 0), workplace.NewTime(14, 0)),
 			Want:   0,
 		},
 		{
@@ -75,7 +78,7 @@ func Test_Workplace_AvailableRooms_DuringBufferTime(t *testing.T) {
 		},
 		{
 			Name:   "not empty when end time is buffer start time",
-			Period: workplace.NewPeriod(workplace.NewTime(8,0), workplace.NewTime(9, 00)),
+			Period: workplace.NewPeriod(workplace.NewTime(8, 0), workplace.NewTime(9, 00)),
 			Want:   2,
 		},
 	}
