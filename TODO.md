@@ -10,6 +10,7 @@
 - Validation for Time
 - Move Period and Time to separate file
 - Validation for Book 
+- Validation for AddRoom
 
 ## Questions / Ideas to revisit
 

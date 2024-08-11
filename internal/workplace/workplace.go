@@ -16,7 +16,7 @@ type Reservation struct {
 
 type Workplace struct {
 	bufTimes []Period
-	rooms    []room
+	rooms    []*room
 }
 
 func New() *Workplace {
@@ -24,7 +24,7 @@ func New() *Workplace {
 }
 
 func (wp *Workplace) AddRoom(name string, capacity int) {
-	wp.rooms = append(wp.rooms, room{name, capacity})
+	wp.rooms = append(wp.rooms, &room{name, capacity})
 	sort.Slice(wp.rooms, func(i, j int) bool {
 		return wp.rooms[i].capacity < wp.rooms[j].capacity
 	})
@@ -49,7 +49,12 @@ func (wp *Workplace) AvailableRooms(p Period) []Vacancy {
 }
 
 func (wp *Workplace) Book(p Period, numOfPeople int) Reservation {
-	return Reservation{wp.rooms[0].name}
+	for _, room := range wp.rooms {
+    if canFit(room, numOfPeople){
+      return Reservation{room.name}
+    }
+  }
+  return Reservation{}
 }
 
 
@@ -76,4 +81,8 @@ func NewTime(hh uint8, mm uint8) Time {
 type room struct {
 	name     string
 	capacity int
+}
+
+func canFit(r *room, numOfPeople int) bool {
+	return numOfPeople <= r.capacity
 }
