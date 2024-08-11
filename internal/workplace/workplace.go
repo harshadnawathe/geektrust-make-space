@@ -10,6 +10,10 @@ type Period struct {
 	start, end Time
 }
 
+type Reservation struct {
+	Room string
+}
+
 type Workplace struct {
 	bufTimes []Period
 	rooms    []room
@@ -43,6 +47,11 @@ func (wp *Workplace) AvailableRooms(p Period) []Vacancy {
 	}
 	return vacancies
 }
+
+func (wp *Workplace) Book(p Period, numOfPeople int) Reservation {
+	return Reservation{wp.rooms[0].name}
+}
+
 
 func NewPeriod(start Time, end Time) Period {
 	return Period{start, end}

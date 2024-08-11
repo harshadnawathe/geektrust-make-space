@@ -108,3 +108,15 @@ func Test_Workplace_AvailableRooms_DuringBufferTime(t *testing.T) {
 		})
 	}
 }
+
+
+func Test_Workplace_Book_Returns_Reservation(t *testing.T) {
+	w := workplace.Build(workplace.WithRoom("C-Cave", 3))
+
+	got := w.Book(workplace.PeriodForTest("10:00", "12:00"), 2)
+
+	want := workplace.Reservation{"C-Cave"}
+	if !reflect.DeepEqual(want, got) {
+    t.Errorf("Book()= %v, want= %v", got, want)
+  }
+}

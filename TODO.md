@@ -8,6 +8,8 @@
 ~- Support for multiple buf times~
 - Validation for Period
 - Validation for Time
+- Move Period and Time to separate file
+- Validation for Book 
 
 ## Questions / Ideas to revisit
 
