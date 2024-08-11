@@ -2,7 +2,7 @@
 
 ## TODO Items
 
-- Need builder for workplace.Period
+~- Need builder for workplace.Period~
 ~- Room capacity~
 ~- Add room struct~
 ~- Support for multiple buf times~

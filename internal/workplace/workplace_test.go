@@ -7,7 +7,10 @@ import (
 )
 
 func Test_Workplace_AvailableRooms_Returns_EmptyList(t *testing.T) {
-	w := workplace.New()
+	w := workplace.Build(
+		workplace.Default(),
+		workplace.WithNoRooms(),
+	)
 
 	vacancies := w.AvailableRooms(workplace.PeriodForTest("10:00", "12:00"))
 
@@ -18,9 +21,10 @@ func Test_Workplace_AvailableRooms_Returns_EmptyList(t *testing.T) {
 }
 
 func Test_Workplace_AvailableRooms_Returns_AllRooms(t *testing.T) {
-	w := workplace.New()
-	w.AddRoom("C-Cave", 3)
-	w.AddRoom("D-Tower", 7)
+	w := workplace.Build(
+		workplace.WithRoom("C-Cave", 3),
+		workplace.WithRoom("D-Tower", 7),
+	)
 
 	got := w.AvailableRooms(workplace.PeriodForTest("10:00", "12:00"))
 
@@ -31,9 +35,10 @@ func Test_Workplace_AvailableRooms_Returns_AllRooms(t *testing.T) {
 }
 
 func Test_Workplace_AvailableRooms_Returns_AllRooms_InSortedOrderOfCapacity(t *testing.T) {
-	w := workplace.New()
-	w.AddRoom("D-Tower", 7)
-	w.AddRoom("C-Cave", 3)
+	w := workplace.Build(
+		workplace.WithRoom("D-Tower", 7),
+		workplace.WithRoom("C-Cave", 3),
+	)
 
 	got := w.AvailableRooms(workplace.PeriodForTest("10:00", "12:00"))
 
@@ -44,11 +49,12 @@ func Test_Workplace_AvailableRooms_Returns_AllRooms_InSortedOrderOfCapacity(t *t
 }
 
 func Test_Workplace_AvailableRooms_DuringBufferTime(t *testing.T) {
-	w := workplace.New()
-	w.AddRoom("C-Cave", 3)
-	w.AddRoom("D-Tower", 7)
-	w.AddBufferTime(workplace.PeriodForTest("09:00", "09:15"))
-	w.AddBufferTime(workplace.PeriodForTest("13:15", "13:45"))
+	w := workplace.Build(
+		workplace.WithRoom("C-Cave", 3),
+		workplace.WithRoom("D-Tower", 7),
+		workplace.WithBufferTime("09:00", "09:15"),
+		workplace.WithBufferTime("13:15", "13:45"),
+	)
 
 	tests := []struct {
 		Name   string
