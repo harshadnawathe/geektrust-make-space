@@ -11,6 +11,9 @@
 - Move Period and Time to separate file
 - Validation for Book 
 - Validation for AddRoom
+~- Room needs a constructor~
+- workplace package needs an error type
+
 
 ## Questions / Ideas to revisit
 

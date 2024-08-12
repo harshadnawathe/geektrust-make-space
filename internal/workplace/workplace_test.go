@@ -194,3 +194,18 @@ func Test_Workplace_Book_DuringBufferTime(t *testing.T) {
 		})
 	}
 }
+
+func Test_Workplace_AvailableRooms_Returns_Rooms_That_Are_Not_Booked(t *testing.T) {
+	w := workplace.Build(
+		workplace.WithRoom("C-Cave", 3),
+		workplace.WithRoom("D-Tower", 7),
+	)
+
+	_, _ = w.Book(workplace.PeriodForTest("10:00", "11:00"), 2)
+
+	got := w.AvailableRooms(workplace.PeriodForTest("10:00", "11:00"))
+	want := []workplace.Vacancy{{"D-Tower"}}
+  if !reflect.DeepEqual(want, got) {
+    t.Errorf("AvailableRooms()= %v, want= %v", got, want)
+  }
+}

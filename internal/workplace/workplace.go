@@ -27,7 +27,8 @@ func New() *Workplace {
 }
 
 func (wp *Workplace) AddRoom(name string, capacity int) {
-	wp.rooms = append(wp.rooms, &room{name, capacity})
+	wp.rooms = append(wp.rooms, newRoom(name, capacity))
+
 	sort.Slice(wp.rooms, func(i, j int) bool {
 		return wp.rooms[i].capacity < wp.rooms[j].capacity
 	})
@@ -44,7 +45,9 @@ func (wp *Workplace) AvailableRooms(p Period) []Vacancy {
 
 	var vacancies []Vacancy
 	for _, room := range wp.rooms {
-		vacancies = append(vacancies, Vacancy{room.name})
+		if !room.booked {
+			vacancies = append(vacancies, Vacancy{room.name})
+		}
 	}
 	return vacancies
 }
@@ -55,12 +58,13 @@ func (wp *Workplace) Book(p Period, numOfPeople int) (Reservation, error) {
 	}
 
 	for _, room := range wp.rooms {
-    if canFit(room, numOfPeople){
-      return Reservation{room.name}, nil
-    }
-  }
+		if canFit(room, numOfPeople) {
+			book(room)
+			return Reservation{room.name}, nil
+		}
+	}
 
-  return Reservation{}, nil
+	return Reservation{}, nil
 }
 
 func isInBufferTime(wp *Workplace, p Period) bool {
@@ -68,10 +72,9 @@ func isInBufferTime(wp *Workplace, p Period) bool {
 		if isOverlapping(bufTime, p) {
 			return true
 		}
-  }
-	return false 
+	}
+	return false
 }
-
 
 func NewPeriod(start Time, end Time) Period {
 	return Period{start, end}
@@ -96,8 +99,21 @@ func NewTime(hh uint8, mm uint8) Time {
 type room struct {
 	name     string
 	capacity int
+	booked   bool
+}
+
+func newRoom(name string, capacity int) *room {
+	return &room{
+		name:     name,
+		capacity: capacity,
+		booked:   false,
+	}
 }
 
 func canFit(r *room, numOfPeople int) bool {
 	return numOfPeople <= r.capacity
+}
+
+func book(r *room) {
+	r.booked = true
 }
