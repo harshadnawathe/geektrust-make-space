@@ -45,7 +45,7 @@ func (wp *Workplace) AvailableRooms(p Period) []Vacancy {
 
 	var vacancies []Vacancy
 	for _, room := range wp.rooms {
-		if !room.booked {
+		if !isBooked(room, p) {
 			vacancies = append(vacancies, Vacancy{room.name})
 		}
 	}
@@ -59,7 +59,7 @@ func (wp *Workplace) Book(p Period, numOfPeople int) (Reservation, error) {
 
 	for _, room := range wp.rooms {
 		if canFit(room, numOfPeople) {
-			book(room)
+			book(room, p)
 			return Reservation{room.name}, nil
 		}
 	}
@@ -98,15 +98,14 @@ func NewTime(hh uint8, mm uint8) Time {
 
 type room struct {
 	name     string
+	bookedAt []Period
 	capacity int
-	booked   bool
 }
 
 func newRoom(name string, capacity int) *room {
 	return &room{
 		name:     name,
 		capacity: capacity,
-		booked:   false,
 	}
 }
 
@@ -114,6 +113,15 @@ func canFit(r *room, numOfPeople int) bool {
 	return numOfPeople <= r.capacity
 }
 
-func book(r *room) {
-	r.booked = true
+func isBooked(r *room, p Period) bool {
+	for _, busyPeriod := range r.bookedAt {
+		if isOverlapping(busyPeriod, p) {
+			return true
+		}
+	}
+  return false
+}
+
+func book(r *room, p Period) {
+	r.bookedAt = append(r.bookedAt, p)
 }
