@@ -58,13 +58,13 @@ func (wp *Workplace) Book(p Period, numOfPeople int) (Reservation, error) {
 	}
 
 	for _, room := range wp.rooms {
-		if canFit(room, numOfPeople) {
-			book(room, p)
+		err := book(room, p, numOfPeople)
+		if err == nil {
 			return Reservation{room.name}, nil
 		}
 	}
 
-	return Reservation{}, nil
+	return Reservation{}, nil 
 }
 
 func isInBufferTime(wp *Workplace, p Period) bool {
@@ -98,29 +98,4 @@ func isTimeBefore(t1, t2 Time) bool {
 
 func NewTime(hh uint8, mm uint8) Time {
 	return Time{hh, mm}
-}
-
-type room struct {
-	name     string
-	bookedAt []Period
-	capacity int
-}
-
-func newRoom(name string, capacity int) *room {
-	return &room{
-		name:     name,
-		capacity: capacity,
-	}
-}
-
-func canFit(r *room, numOfPeople int) bool {
-	return numOfPeople <= r.capacity
-}
-
-func isBooked(r *room, p Period) bool {
-	return isAnyOverlapping(r.bookedAt, p)
-}
-
-func book(r *room, p Period) {
-	r.bookedAt = append(r.bookedAt, p)
 }
