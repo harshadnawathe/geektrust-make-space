@@ -68,12 +68,7 @@ func (wp *Workplace) Book(p Period, numOfPeople int) (Reservation, error) {
 }
 
 func isInBufferTime(wp *Workplace, p Period) bool {
-	for _, bufTime := range wp.bufTimes {
-		if isOverlapping(bufTime, p) {
-			return true
-		}
-	}
-	return false
+	return isAnyOverlapping(wp.bufTimes, p)
 }
 
 func NewPeriod(start Time, end Time) Period {
@@ -82,6 +77,15 @@ func NewPeriod(start Time, end Time) Period {
 
 func isOverlapping(p1 Period, p2 Period) bool {
 	return isTimeBefore(p1.start, p2.end) && isTimeBefore(p2.start, p1.end)
+}
+
+func isAnyOverlapping(periods []Period, p Period) bool {
+	for _, period := range periods {
+		if isOverlapping(period, p) {
+			return true
+		}
+	}
+	return false
 }
 
 type Time struct {
@@ -114,12 +118,7 @@ func canFit(r *room, numOfPeople int) bool {
 }
 
 func isBooked(r *room, p Period) bool {
-	for _, busyPeriod := range r.bookedAt {
-		if isOverlapping(busyPeriod, p) {
-			return true
-		}
-	}
-  return false
+	return isAnyOverlapping(r.bookedAt, p)
 }
 
 func book(r *room, p Period) {
