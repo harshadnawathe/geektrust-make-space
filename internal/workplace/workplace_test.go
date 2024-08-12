@@ -195,32 +195,64 @@ func Test_Workplace_Book_DuringBufferTime(t *testing.T) {
 	}
 }
 
-func Test_Workplace_AvailableRooms_Returns_Rooms_That_Are_Not_Booked(t *testing.T) {
-	w := workplace.Build(
-		workplace.WithRoom("C-Cave", 3),
-		workplace.WithRoom("D-Tower", 7),
-	)
-
-	_, _ = w.Book(workplace.PeriodForTest("10:00", "11:00"), 2)
-
-	got := w.AvailableRooms(workplace.PeriodForTest("10:00", "11:00"))
-	want := []workplace.Vacancy{{"D-Tower"}}
-	if !reflect.DeepEqual(want, got) {
-		t.Errorf("AvailableRooms()= %v, want= %v", got, want)
+func Test_Workplace_AvailableRooms_After_Book(t *testing.T) {
+	tests := []struct {
+		Name   string
+		Want   []workplace.Vacancy
+		Period workplace.Period
+	}{
+		{
+			Name:   "when start time is busy time start",
+			Period: workplace.PeriodForTest("10:00", "10:30"),
+			Want:   []workplace.Vacancy{{"D-Tower"}},
+		},
+		{
+			Name:   "when end time is busy time end",
+			Period: workplace.PeriodForTest("14:30", "15:00"),
+			Want:   []workplace.Vacancy{{"C-Cave"}},
+		},
+		{
+			Name:   "when start time in busy time",
+			Period: workplace.PeriodForTest("10:30", "12:00"),
+			Want:   []workplace.Vacancy{{"D-Tower"}},
+		},
+		{
+			Name:   "when end time in busy time",
+			Period: workplace.PeriodForTest("13:45", "14:30"),
+			Want:   []workplace.Vacancy{{"C-Cave"}},
+		},
+		{
+			Name:   "when busy time in period",
+			Period: workplace.PeriodForTest("09:00", "12:00"),
+			Want:   []workplace.Vacancy{{"D-Tower"}},
+		},
+		{
+			Name:   "when start time is busy end time",
+			Period: workplace.PeriodForTest("09:15", "10:00"),
+			Want:   []workplace.Vacancy{{"C-Cave"}, {"D-Tower"}},
+		},
+		{
+			Name:   "when end time is busy start time",
+			Period: workplace.PeriodForTest("08:00", "09:00"),
+			Want:   []workplace.Vacancy{{"C-Cave"}, {"D-Tower"}},
+		},
 	}
-}
 
-func Test_Workplace_Book_A_Booked_Room_Is_Available_At_Different_Time(t *testing.T) {
-	w := workplace.Build(
-		workplace.WithRoom("C-Cave", 3),
-	)
+	for _, test := range tests {
+		t.Run(test.Name, func(t *testing.T) {
+			w := workplace.Build(
+				workplace.WithRoom("C-Cave", 3),
+				workplace.WithRoom("D-Tower", 7),
+			)
+			_, _ = w.Book(workplace.PeriodForTest("10:00", "11:00"), 2)
+			_, _ = w.Book(workplace.PeriodForTest("14:00", "15:00"), 5)
 
-	_, _ = w.Book(workplace.PeriodForTest("10:00", "11:00"), 2)
+			got := w.AvailableRooms(test.Period)
 
-	got := w.AvailableRooms(workplace.PeriodForTest("14:00", "15:00"))
-	want := []workplace.Vacancy{{"C-Cave"}}
-	if !reflect.DeepEqual(want, got) {
-		t.Errorf("AvailableRooms()= %v, want= %v", got, want)
+			if !reflect.DeepEqual(got, test.Want) {
+				t.Errorf("AvailableRooms()= %v, want= %v", got, test.Want)
+			}
+		})
 	}
 }
 

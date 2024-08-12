@@ -13,7 +13,7 @@
 - Validation for AddRoom
 ~- Room needs a constructor~
 - workplace package needs an error type
-- Book room tests might be refactored as a table test
+~- Book room tests might be refactored as a table test~
 ~- book(room) must check if,~
   ~- the room is available~ 
   ~- canFit given number of people~
