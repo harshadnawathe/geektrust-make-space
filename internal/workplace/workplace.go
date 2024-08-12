@@ -64,7 +64,7 @@ func (wp *Workplace) Book(p Period, numOfPeople int) (Reservation, error) {
 		}
 	}
 
-	return Reservation{}, nil 
+	return Reservation{}, errors.New("cannot book: no vacant room")
 }
 
 func isInBufferTime(wp *Workplace, p Period) bool {

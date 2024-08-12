@@ -136,12 +136,6 @@ func Test_Workplace_Book_Reserves_First_Available_Room_That_Can_Fit_Given_People
 }
 
 func Test_Workplace_Book_DuringBufferTime(t *testing.T) {
-	w := workplace.Build(
-		workplace.WithRoom("D-Tower", 7),
-		workplace.WithBufferTime("09:00", "09:15"),
-		workplace.WithBufferTime("13:15", "13:45"),
-	)
-
 	tests := []struct {
 		Name     string
 		Period   workplace.Period
@@ -186,7 +180,13 @@ func Test_Workplace_Book_DuringBufferTime(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.Name, func(t *testing.T) {
-			_, err := w.Book(test.Period, 10)
+			w := workplace.Build(
+				workplace.WithRoom("D-Tower", 7),
+				workplace.WithBufferTime("09:00", "09:15"),
+				workplace.WithBufferTime("13:15", "13:45"),
+			)
+
+			_, err := w.Book(test.Period, 2)
 
 			if got := err == nil; test.IsErrNil != got {
 				t.Errorf("Book()= %v, want= %v", got, test.IsErrNil)
@@ -205,9 +205,9 @@ func Test_Workplace_AvailableRooms_Returns_Rooms_That_Are_Not_Booked(t *testing.
 
 	got := w.AvailableRooms(workplace.PeriodForTest("10:00", "11:00"))
 	want := []workplace.Vacancy{{"D-Tower"}}
-  if !reflect.DeepEqual(want, got) {
-    t.Errorf("AvailableRooms()= %v, want= %v", got, want)
-  }
+	if !reflect.DeepEqual(want, got) {
+		t.Errorf("AvailableRooms()= %v, want= %v", got, want)
+	}
 }
 
 func Test_Workplace_Book_A_Booked_Room_Is_Available_At_Different_Time(t *testing.T) {
@@ -219,7 +219,18 @@ func Test_Workplace_Book_A_Booked_Room_Is_Available_At_Different_Time(t *testing
 
 	got := w.AvailableRooms(workplace.PeriodForTest("14:00", "15:00"))
 	want := []workplace.Vacancy{{"C-Cave"}}
-  if !reflect.DeepEqual(want, got) {
-    t.Errorf("AvailableRooms()= %v, want= %v", got, want)
-  }
+	if !reflect.DeepEqual(want, got) {
+		t.Errorf("AvailableRooms()= %v, want= %v", got, want)
+	}
+}
+
+func Test_Workplace_Book_Returns_Error_When_No_Rooms_Are_Available(t *testing.T) {
+	w := workplace.Build(workplace.WithNoRooms())
+
+	_, err := w.Book(workplace.PeriodForTest("10:00", "11:00"), 2)
+
+	wantErr := true
+	if gotErr := err != nil; gotErr != wantErr {
+		t.Errorf("Book()= %v, wantErr= %v", gotErr, wantErr)
+	}
 }
