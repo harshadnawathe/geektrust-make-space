@@ -172,6 +172,16 @@ func Test_Workplace_Book_DuringBufferTime(t *testing.T) {
 			Period:   workplace.PeriodForTest("13:00", "14:00"),
 			IsErrNil: false,
 		},
+		{
+			Name:     "not err when start time is buffer end time",
+			Period:   workplace.PeriodForTest("09:15", "10:00"),
+			IsErrNil: true,
+		},
+		{
+			Name:     "not err when end time is buffer start time",
+			Period:   workplace.PeriodForTest("08:00", "09:00"),
+			IsErrNil: true,
+		},
 	}
 
 	for _, test := range tests {
