@@ -1,6 +1,9 @@
 package workplace
 
-import "sort"
+import (
+	"errors"
+	"sort"
+)
 
 type Vacancy struct {
 	Room string
@@ -35,10 +38,8 @@ func (wp *Workplace) AddBufferTime(p Period) {
 }
 
 func (wp *Workplace) AvailableRooms(p Period) []Vacancy {
-	for _, bufTime := range wp.bufTimes {
-		if isOverlapping(bufTime, p) {
-			return nil
-		}
+	if isInBufferTime(wp, p) {
+		return nil
 	}
 
 	var vacancies []Vacancy
@@ -48,13 +49,27 @@ func (wp *Workplace) AvailableRooms(p Period) []Vacancy {
 	return vacancies
 }
 
-func (wp *Workplace) Book(p Period, numOfPeople int) Reservation {
+func (wp *Workplace) Book(p Period, numOfPeople int) (Reservation, error) {
+	if isInBufferTime(wp, p) {
+		return Reservation{}, errors.New("cannot book in buffer time")
+	}
+
 	for _, room := range wp.rooms {
     if canFit(room, numOfPeople){
-      return Reservation{room.name}
+      return Reservation{room.name}, nil
     }
   }
-  return Reservation{}
+
+  return Reservation{}, nil
+}
+
+func isInBufferTime(wp *Workplace, p Period) bool {
+	for _, bufTime := range wp.bufTimes {
+		if isOverlapping(bufTime, p) {
+			return true
+		}
+  }
+	return false 
 }
 
 
