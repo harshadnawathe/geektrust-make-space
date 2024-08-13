@@ -15,7 +15,7 @@ func New() *Workplace {
 	return &Workplace{}
 }
 
-func (wp *Workplace) AddRoom(name string, capacity int) {
+func (wp *Workplace) AddRoom(name string, capacity NumOfPeople) {
 	wp.rooms = append(wp.rooms, newRoom(name, capacity))
 
 	sort.Slice(wp.rooms, func(i, j int) bool {
@@ -35,14 +35,14 @@ func (wp *Workplace) AvailableRooms(p Period) []Vacancy {
 	return findVacancies(wp.rooms, p)
 }
 
-func (wp *Workplace) Book(p Period, numOfPeople int) (r Reservation, err error) {
+func (wp *Workplace) Book(p Period, n NumOfPeople) (r Reservation, err error) {
 	err = validatePeriod(wp, p)
 	if err != nil {
 		err = fmt.Errorf("cannot book: %w", err)
 		return
 	}
 
-	r, err = findAndReserveRoom(wp.rooms, p, numOfPeople)
+	r, err = findAndReserveRoom(wp.rooms, p, n)
 	if err != nil {
 		err = fmt.Errorf("cannot book: %w", err)
 		return

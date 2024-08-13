@@ -5,21 +5,23 @@ import (
 	"fmt"
 )
 
+type NumOfPeople uint
+
 type room struct {
 	name     string
 	bookedAt []Period
-	capacity int
+	capacity NumOfPeople
 }
 
-func newRoom(name string, capacity int) *room {
+func newRoom(name string, capacity NumOfPeople) *room {
 	return &room{
 		name:     name,
 		capacity: capacity,
 	}
 }
 
-func canFit(r *room, numOfPeople int) bool {
-	return numOfPeople <= r.capacity
+func canFit(r *room, n NumOfPeople) bool {
+	return n <= r.capacity
 }
 
 func isBooked(r *room, p Period) bool {
@@ -30,9 +32,9 @@ type Reservation struct {
 	Room string
 }
 
-func reserve(r *room, p Period, numOfPeople int) (res Reservation, err error) {
-	if !canFit(r, numOfPeople) {
-		err = fmt.Errorf("cannot reserve: room with capacity %v cannot fit %v people", r.capacity, numOfPeople)
+func reserve(r *room, p Period, n NumOfPeople) (res Reservation, err error) {
+	if !canFit(r, n) {
+		err = fmt.Errorf("cannot reserve: room with capacity %v cannot fit %v people", r.capacity, n)
 		return
 	}
 
@@ -48,9 +50,9 @@ func reserve(r *room, p Period, numOfPeople int) (res Reservation, err error) {
 	return
 }
 
-func findAndReserveRoom(rooms []*room, p Period, numOfPeople int) (Reservation, error) {
+func findAndReserveRoom(rooms []*room, p Period, n NumOfPeople) (Reservation, error) {
 	for _, room := range rooms {
-		if reservation, err := reserve(room, p, numOfPeople); err == nil {
+		if reservation, err := reserve(room, p, n); err == nil {
 			return reservation, nil
 		}
 	}

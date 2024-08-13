@@ -63,7 +63,7 @@ func WithNoRooms() workplaceConfigurer {
 	}
 }
 
-func WithRoom(name string, capacity int) workplaceConfigurer {
+func WithRoom(name string, capacity NumOfPeople) workplaceConfigurer {
 	return func(w *Workplace) {
 		w.AddRoom(name, capacity)
 	}
