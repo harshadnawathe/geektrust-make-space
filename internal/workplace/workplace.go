@@ -50,12 +50,8 @@ func (wp *Workplace) AvailableRooms(p Period) []Vacancy {
 }
 
 func (wp *Workplace) Book(p Period, numOfPeople int) (Reservation, error) {
-	if err := validatePeriod(p); err != nil {
+	if err := validatePeriod(wp, p); err != nil {
 		return Reservation{}, fmt.Errorf("cannot book: %w", err)
-	}
-
-	if isInBufferTime(wp, p) {
-		return Reservation{}, errors.New("cannot book in buffer time")
 	}
 
 	for _, room := range wp.rooms {
@@ -72,13 +68,17 @@ func isInBufferTime(wp *Workplace, p Period) bool {
 	return isAnyOverlapping(wp.bufTimes, p)
 }
 
-func validatePeriod(p Period) error {
+func validatePeriod(wp *Workplace, p Period) error {
 	if p.start.mm%15 != 0 {
 		return errors.New("start time is not in 15 min increments")
 	}
 
 	if p.end.mm%15 != 0 {
 		return errors.New("end time is not in 15 min increments")
+	}
+
+	if isInBufferTime(wp, p) {
+		return errors.New("period overlaps with buffer time")
 	}
 
 	return nil
