@@ -2,6 +2,7 @@ package workplace
 
 import (
 	"errors"
+	"fmt"
 	"sort"
 )
 
@@ -49,12 +50,8 @@ func (wp *Workplace) AvailableRooms(p Period) []Vacancy {
 }
 
 func (wp *Workplace) Book(p Period, numOfPeople int) (Reservation, error) {
-	if p.start.mm%15 != 0 {
-		return Reservation{}, errors.New("cannot book: start time is not in 15 min increments")
-	}
-
-	if p.end.mm%15 != 0 {
-		return Reservation{}, errors.New("cannot book: end time is not in 15 min increments")
+	if err := validatePeriod(p); err != nil {
+		return Reservation{}, fmt.Errorf("cannot book: %w", err)
 	}
 
 	if isInBufferTime(wp, p) {
@@ -73,4 +70,16 @@ func (wp *Workplace) Book(p Period, numOfPeople int) (Reservation, error) {
 
 func isInBufferTime(wp *Workplace, p Period) bool {
 	return isAnyOverlapping(wp.bufTimes, p)
+}
+
+func validatePeriod(p Period) error {
+	if p.start.mm%15 != 0 {
+		return errors.New("start time is not in 15 min increments")
+	}
+
+	if p.end.mm%15 != 0 {
+		return errors.New("end time is not in 15 min increments")
+	}
+
+	return nil
 }
