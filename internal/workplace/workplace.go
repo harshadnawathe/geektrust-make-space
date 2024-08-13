@@ -49,19 +49,23 @@ func (wp *Workplace) AvailableRooms(p Period) []Vacancy {
 	return vacancies
 }
 
-func (wp *Workplace) Book(p Period, numOfPeople int) (Reservation, error) {
-	if err := validatePeriod(wp, p); err != nil {
-		return Reservation{}, fmt.Errorf("cannot book: %w", err)
+func (wp *Workplace) Book(p Period, numOfPeople int) (r Reservation, err error) {
+	err = validatePeriod(wp, p)
+	if err != nil {
+		err = fmt.Errorf("cannot book: %w", err)
+		return
 	}
 
-	for _, room := range wp.rooms {
-		err := book(room, p, numOfPeople)
-		if err == nil {
-			return Reservation{room.name}, nil
-		}
+	var bookedRoom *room
+	bookedRoom, err = findAndBookRoom(wp.rooms, p, numOfPeople)
+	if err != nil {
+		err = fmt.Errorf("cannot book: %w", err)
+		return
 	}
 
-	return Reservation{}, errors.New("cannot book: no vacant room")
+	r = Reservation{bookedRoom.name}
+
+  return
 }
 
 func isInBufferTime(wp *Workplace, p Period) bool {
@@ -83,3 +87,4 @@ func validatePeriod(wp *Workplace, p Period) error {
 
 	return nil
 }
+

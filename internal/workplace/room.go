@@ -38,3 +38,13 @@ func book(r *room, p Period, numOfPeople int) error {
 	r.bookedAt = append(r.bookedAt, p)
 	return nil
 }
+
+func findAndBookRoom(rooms []*room, p Period, numOfPeople int) (*room, error) {
+	for _, room := range rooms {
+		if err := book(room, p, numOfPeople); err == nil {
+			return room, nil
+		}
+	}
+
+	return nil, errors.New("no vacant room")
+}
