@@ -1,5 +1,7 @@
 package workplace
 
+import "fmt"
+
 type Period struct {
 	start, end Time
 }
@@ -31,4 +33,8 @@ func NewTime(hh uint8, mm uint8) Time {
 
 func isTimeBefore(t1, t2 Time) bool {
 	return t1.hh < t2.hh || (t1.hh == t2.hh && t1.mm < t2.mm)
+}
+
+func (t Time) String() string {
+	return fmt.Sprintf("%02d:%02d", t.hh, t.mm)
 }
