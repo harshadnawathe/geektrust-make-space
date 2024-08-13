@@ -48,3 +48,17 @@ func findAndBookRoom(rooms []*room, p Period, numOfPeople int) (*room, error) {
 
 	return nil, errors.New("no vacant room")
 }
+
+type Vacancy struct {
+	Room string
+}
+
+func findVacancies(rooms []*room, p Period) []Vacancy {
+	var vacancies []Vacancy
+	for _, room := range rooms {
+		if !isBooked(room, p) {
+			vacancies = append(vacancies, Vacancy{room.name})
+		}
+	}
+	return vacancies
+}

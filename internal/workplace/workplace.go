@@ -6,10 +6,6 @@ import (
 	"sort"
 )
 
-type Vacancy struct {
-	Room string
-}
-
 type Reservation struct {
 	Room string
 }
@@ -40,13 +36,7 @@ func (wp *Workplace) AvailableRooms(p Period) []Vacancy {
 		return nil
 	}
 
-	var vacancies []Vacancy
-	for _, room := range wp.rooms {
-		if !isBooked(room, p) {
-			vacancies = append(vacancies, Vacancy{room.name})
-		}
-	}
-	return vacancies
+	return findVacancies(wp.rooms, p)
 }
 
 func (wp *Workplace) Book(p Period, numOfPeople int) (r Reservation, err error) {
@@ -65,7 +55,7 @@ func (wp *Workplace) Book(p Period, numOfPeople int) (r Reservation, err error) 
 
 	r = Reservation{bookedRoom.name}
 
-  return
+	return
 }
 
 func isInBufferTime(wp *Workplace, p Period) bool {
@@ -87,4 +77,3 @@ func validatePeriod(wp *Workplace, p Period) error {
 
 	return nil
 }
-
