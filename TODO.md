@@ -8,7 +8,7 @@
 ~- Support for multiple buf times~
 - Validation for Period
 - Validation for Time
-- Move Period and Time to separate file
+~- Move Period and Time to separate file~
 - Validation for Book 
 - Validation for AddRoom
 ~- Room needs a constructor~
