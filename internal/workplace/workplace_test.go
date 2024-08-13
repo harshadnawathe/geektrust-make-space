@@ -135,6 +135,21 @@ func Test_Workplace_Book_Reserves_First_Available_Room_That_Can_Fit_Given_People
 	}
 }
 
+func Test_Workplace_Book_Reserves_Next_Bigger_Room_When_A_Smaller_Room_Is_Unavailable(t *testing.T) {
+	w := workplace.Build(
+		workplace.WithRoom("C-Cave", 3),
+		workplace.WithRoom("D-Tower", 7),
+	)
+	_, _ = w.Book(workplace.PeriodForTest("10:00", "12:00"), 2)
+
+	got, _ := w.Book(workplace.PeriodForTest("10:30", "11:30"), 2)
+
+	want := workplace.Reservation{"D-Tower"}
+	if !reflect.DeepEqual(want, got) {
+		t.Errorf("Book()= %v, want= %v", got, want)
+	}
+}
+
 func Test_Workplace_Book_DuringBufferTime(t *testing.T) {
 	tests := []struct {
 		Name     string
