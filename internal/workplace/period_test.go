@@ -1,6 +1,8 @@
 package workplace
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestTime_String(t *testing.T) {
 	type fields struct {
@@ -38,5 +40,16 @@ func TestTime_String(t *testing.T) {
 				t.Errorf("Time.String() = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestPeriod_String(t *testing.T) {
+	p := PeriodForTest("09:30", "13:45")
+
+	got := p.String()
+
+	want := "09:30 - 13:45"
+	if got != want {
+		t.Errorf("String()= %v, want= %v", got, want)
 	}
 }

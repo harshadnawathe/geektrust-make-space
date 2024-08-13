@@ -23,6 +23,10 @@ func isAnyOverlapping(periods []Period, p Period) bool {
 	return false
 }
 
+func (p Period) String() string {
+	return fmt.Sprintf("%s - %s", p.start, p.end)
+}
+
 type Time struct {
 	hh, mm uint8
 }
