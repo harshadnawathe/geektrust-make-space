@@ -281,3 +281,61 @@ func Test_Workplace_Book_Returns_Error_When_No_Rooms_Are_Available(t *testing.T)
 		t.Errorf("Book()= %v, wantErr= %v", gotErr, wantErr)
 	}
 }
+
+func Test_Workplace_Book_Checks_If_Period_In_15_Minutes_Increments(t *testing.T) {
+	type args struct {
+		p           workplace.Period
+		numOfPeople int
+	}
+
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "error when start time is not in 15 minutes increments",
+			args: args{
+				p:           workplace.PeriodForTest("10:03", "11:00"),
+				numOfPeople: 2,
+			},
+			wantErr: true,
+		},
+		{
+			name: "no error when start time is not in 15 minutes increments",
+			args: args{
+				p:           workplace.PeriodForTest("10:00", "11:00"),
+				numOfPeople: 2,
+			},
+			wantErr: false,
+		},
+		{
+			name: "error when end time is not in 15 minutes increments",
+			args: args{
+				p:           workplace.PeriodForTest("10:00", "11:16"),
+				numOfPeople: 2,
+			},
+			wantErr: true,
+		},
+		{
+			name: "no error when end time is not in 15 minutes increments",
+			args: args{
+				p:           workplace.PeriodForTest("10:00", "11:00"),
+				numOfPeople: 2,
+			},
+			wantErr: false,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			w := workplace.Build(workplace.Default())
+
+			_, err := w.Book(test.args.p, test.args.numOfPeople)
+
+			if test.wantErr != (err != nil) {
+				t.Errorf("Book() error= %v, wantErr= %v", err, test.wantErr)
+			}
+		})
+	}
+}
