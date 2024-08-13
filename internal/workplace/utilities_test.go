@@ -14,8 +14,17 @@ func NewTimeMust(hh, mm uint8) Time {
 	return time
 }
 
+func NewPeriodMust(start, end Time) Period {
+	period, err := NewPeriod(start, end)
+  if err != nil {
+    panic(err)
+  }
+
+	return period
+}
+
 func PeriodForTest(start, end string) Period {
-	return NewPeriod(TimeForTest(start), TimeForTest(end))
+	return NewPeriodMust(TimeForTest(start), TimeForTest(end))
 }
 
 func TimeForTest(time string) Time {

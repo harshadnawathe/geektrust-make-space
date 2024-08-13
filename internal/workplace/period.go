@@ -9,8 +9,15 @@ type Period struct {
 	start, end Time
 }
 
-func NewPeriod(start Time, end Time) Period {
-	return Period{start, end}
+func NewPeriod(start Time, end Time) (p Period, err error) {
+	if isTimeBefore(end, start) {
+		err = errors.New("end is before start")
+		return
+	}
+
+	p = Period{start, end}
+
+	return
 }
 
 func isOverlapping(p1 Period, p2 Period) bool {

@@ -6,7 +6,7 @@
 ~- Room capacity~
 ~- Add room struct~
 ~- Support for multiple buf times~
-- Validation for Period
+~- Validation for Period~
 ~- Validation for Time~
 ~- Move Period and Time to separate file~
 - Validation for Book 
@@ -14,6 +14,7 @@
 ~- Room needs a constructor~
 - workplace package needs an error type
 - create error type NewTimeErr 
+- create error type NewPeriodErr
 ~- Book room tests might be refactored as a table test~
 ~- book(room) must check if,~
   ~- the room is available~ 

@@ -107,3 +107,47 @@ func TestNewTime(t *testing.T) {
 		})
 	}
 }
+
+func TestNewPeriod(t *testing.T) {
+	type args struct {
+		start Time
+		end   Time
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    Period
+		wantErr bool
+	}{
+		{
+			name: "create period with no error",
+			args: args{
+				start: TimeForTest("09:30"),
+				end:   TimeForTest("13:45"),
+			},
+			want:    Period{Time{9, 30}, Time{13, 45}},
+			wantErr: false,
+		},
+		{
+			name: "error when end is before start",
+			args: args{
+				start: TimeForTest("14:00"),
+				end:   TimeForTest("13:00"),
+			},
+			want:    Period{},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := NewPeriod(tt.args.start, tt.args.end)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewPeriod() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewPeriod() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
