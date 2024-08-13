@@ -6,10 +6,6 @@ import (
 	"sort"
 )
 
-type Reservation struct {
-	Room string
-}
-
 type Workplace struct {
 	bufTimes []Period
 	rooms    []*room
@@ -46,14 +42,11 @@ func (wp *Workplace) Book(p Period, numOfPeople int) (r Reservation, err error) 
 		return
 	}
 
-	var bookedRoom *room
-	bookedRoom, err = findAndBookRoom(wp.rooms, p, numOfPeople)
+	r, err = findAndReserveRoom(wp.rooms, p, numOfPeople)
 	if err != nil {
 		err = fmt.Errorf("cannot book: %w", err)
 		return
 	}
-
-	r = Reservation{bookedRoom.name}
 
 	return
 }

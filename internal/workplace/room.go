@@ -26,27 +26,36 @@ func isBooked(r *room, p Period) bool {
 	return isAnyOverlapping(r.bookedAt, p)
 }
 
-func book(r *room, p Period, numOfPeople int) error {
+type Reservation struct {
+	Room string
+}
+
+func reserve(r *room, p Period, numOfPeople int) (res Reservation, err error) {
 	if !canFit(r, numOfPeople) {
-		return fmt.Errorf("cannot book: cannot fit %v people in the room with capacity %v", numOfPeople, r.capacity)
+		err = fmt.Errorf("cannot reserve: room with capacity %v cannot fit %v people", r.capacity, numOfPeople)
+		return
 	}
 
 	if isBooked(r, p) {
-		return errors.New("cannot book: room is booked")
+		err = errors.New("cannot reserve: room is booked")
+		return
 	}
 
 	r.bookedAt = append(r.bookedAt, p)
-	return nil
+
+	res = Reservation{r.name}
+
+	return
 }
 
-func findAndBookRoom(rooms []*room, p Period, numOfPeople int) (*room, error) {
+func findAndReserveRoom(rooms []*room, p Period, numOfPeople int) (Reservation, error) {
 	for _, room := range rooms {
-		if err := book(room, p, numOfPeople); err == nil {
-			return room, nil
+		if reservation, err := reserve(room, p, numOfPeople); err == nil {
+			return reservation, nil
 		}
 	}
 
-	return nil, errors.New("no vacant room")
+	return Reservation{}, errors.New("no vacant room")
 }
 
 type Vacancy struct {
