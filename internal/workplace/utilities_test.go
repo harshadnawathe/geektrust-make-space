@@ -5,6 +5,15 @@ import (
 	"strconv"
 )
 
+func NewTimeMust(hh, mm uint8) Time {
+	time, err := NewTime(hh, mm)
+	if err != nil {
+		panic(err)
+	}
+
+	return time
+}
+
 func PeriodForTest(start, end string) Period {
 	return NewPeriod(TimeForTest(start), TimeForTest(end))
 }
@@ -22,7 +31,7 @@ func TimeForTest(time string) Time {
 		panic(fmt.Errorf("cannot parse time `%s`: %w", time, err))
 	}
 
-	return NewTime(uint8(hh), uint8(mm))
+	return NewTimeMust(uint8(hh), uint8(mm))
 }
 
 type workplaceConfigurer func(w *Workplace)
@@ -57,10 +66,10 @@ func WithBufferTime(start, end string) workplaceConfigurer {
 	}
 }
 
-func Build(configs... workplaceConfigurer) *Workplace {
+func Build(configs ...workplaceConfigurer) *Workplace {
 	w := New()
-  for _, config := range configs {
-    config(w)
-  }
-  return w
+	for _, config := range configs {
+		config(w)
+	}
+	return w
 }

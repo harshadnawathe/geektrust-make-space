@@ -1,6 +1,7 @@
 package workplace
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -51,5 +52,58 @@ func TestPeriod_String(t *testing.T) {
 	want := "09:30 - 13:45"
 	if got != want {
 		t.Errorf("String()= %v, want= %v", got, want)
+	}
+}
+
+func TestNewTime(t *testing.T) {
+	type args struct {
+		hh uint8
+		mm uint8
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    Time
+		wantErr bool
+	}{
+		{
+			name: "create time with no error",
+			args: args{
+				hh: 11,
+				mm: 59,
+			},
+			want:    Time{11, 59},
+			wantErr: false,
+		},
+		{
+			name: "error when hour value is greater than 23",
+			args: args{
+				hh: 24,
+				mm: 59,
+			},
+			want:    Time{},
+			wantErr: true,
+		},
+		{
+			name: "error when minute value is greater than 59",
+			args: args{
+				hh: 12,
+				mm: 60,
+			},
+			want:    Time{},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := NewTime(tt.args.hh, tt.args.mm)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewTime() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewTime() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }

@@ -1,6 +1,9 @@
 package workplace
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type Period struct {
 	start, end Time
@@ -31,8 +34,20 @@ type Time struct {
 	hh, mm uint8
 }
 
-func NewTime(hh uint8, mm uint8) Time {
-	return Time{hh, mm}
+func NewTime(hh uint8, mm uint8) (t Time, err error) {
+	if hh > 23 {
+		err = errors.New("invalid hour value")
+		return
+	}
+
+	if mm > 59 {
+		err = errors.New("invalid minute value")
+		return
+	}
+
+	t = Time{hh, mm}
+
+	return
 }
 
 func isTimeBefore(t1, t2 Time) bool {
