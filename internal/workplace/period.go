@@ -43,12 +43,12 @@ type Time struct {
 
 func NewTime(hh uint8, mm uint8) (t Time, err error) {
 	if hh > 23 {
-		err = errors.New("invalid hour value")
+		err = &TimeError{hh, mm, ErrTimeInvalidHourValue}
 		return
 	}
 
 	if mm > 59 {
-		err = errors.New("invalid minute value")
+		err = &TimeError{hh, mm, ErrTimeInvalidMinuteValue}
 		return
 	}
 
@@ -64,3 +64,27 @@ func isTimeBefore(t1, t2 Time) bool {
 func (t Time) String() string {
 	return fmt.Sprintf("%02d:%02d", t.hh, t.mm)
 }
+
+type TimeError struct {
+	HH, MM uint8
+	Err    error
+}
+
+func (err *TimeError) Error() string {
+	return fmt.Sprintf("invalid time value `%02d:%02d`: %s", err.HH, err.MM, err.Err)
+}
+
+func (err *TimeError) Unwrap() error {
+	return err.Err
+}
+
+type TimeValueError string
+
+func (err TimeValueError) Error() string {
+	return string(err)
+}
+
+const (
+	ErrTimeInvalidHourValue   TimeValueError = "hour value must be between 0 and 23"
+	ErrTimeInvalidMinuteValue TimeValueError = "minute value must be between 0 and 59"
+)

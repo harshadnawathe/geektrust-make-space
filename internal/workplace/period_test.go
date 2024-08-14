@@ -64,7 +64,7 @@ func TestNewTime(t *testing.T) {
 		name    string
 		args    args
 		want    Time
-		wantErr bool
+		wantErr error
 	}{
 		{
 			name: "create time with no error",
@@ -73,7 +73,7 @@ func TestNewTime(t *testing.T) {
 				mm: 59,
 			},
 			want:    Time{11, 59},
-			wantErr: false,
+			wantErr: nil,
 		},
 		{
 			name: "error when hour value is greater than 23",
@@ -82,7 +82,7 @@ func TestNewTime(t *testing.T) {
 				mm: 59,
 			},
 			want:    Time{},
-			wantErr: true,
+			wantErr: &TimeError{HH: 24, MM: 59, Err: ErrTimeInvalidHourValue},
 		},
 		{
 			name: "error when minute value is greater than 59",
@@ -91,13 +91,13 @@ func TestNewTime(t *testing.T) {
 				mm: 60,
 			},
 			want:    Time{},
-			wantErr: true,
+			wantErr: &TimeError{HH: 12, MM: 60, Err: ErrTimeInvalidMinuteValue},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := NewTime(tt.args.hh, tt.args.mm)
-			if (err != nil) != tt.wantErr {
+			if !reflect.DeepEqual(err, tt.wantErr) {
 				t.Errorf("NewTime() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
@@ -149,5 +149,52 @@ func TestNewPeriod(t *testing.T) {
 				t.Errorf("NewPeriod() = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestTimeError_Error(t *testing.T) {
+	type fields struct {
+		HH  uint8
+		MM  uint8
+		Err error
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   string
+	}{
+		{
+			"invalid hour value",
+			fields{24, 59, ErrTimeInvalidHourValue},
+			"invalid time value `24:59`: hour value must be between 0 and 23",
+		},
+		{
+			"invalid minute value",
+			fields{12, 60, ErrTimeInvalidMinuteValue},
+			"invalid time value `12:60`: minute value must be between 0 and 59",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := &TimeError{
+				HH:  tt.fields.HH,
+				MM:  tt.fields.MM,
+				Err: tt.fields.Err,
+			}
+			if got := err.Error(); got != tt.want {
+				t.Errorf("TimeError.Error() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestTimeError_Unwrap(t *testing.T) {
+	err := &TimeError{Err: ErrTimeInvalidHourValue}
+
+	got := err.Unwrap()
+
+	want := ErrTimeInvalidHourValue
+	if got != want {
+		t.Errorf("Unwrap()= %v, want= %v", got, want)
 	}
 }
