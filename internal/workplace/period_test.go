@@ -117,7 +117,7 @@ func TestNewPeriod(t *testing.T) {
 		name    string
 		args    args
 		want    Period
-		wantErr bool
+		wantErr error
 	}{
 		{
 			name: "create period with no error",
@@ -126,7 +126,7 @@ func TestNewPeriod(t *testing.T) {
 				end:   TimeForTest("13:45"),
 			},
 			want:    Period{Time{9, 30}, Time{13, 45}},
-			wantErr: false,
+			wantErr: nil,
 		},
 		{
 			name: "error when end is before start",
@@ -135,13 +135,17 @@ func TestNewPeriod(t *testing.T) {
 				end:   TimeForTest("13:00"),
 			},
 			want:    Period{},
-			wantErr: true,
+			wantErr: &PeriodError{
+				Start: TimeForTest("14:00"),
+				End: TimeForTest("13:00"),
+				Err: ErrPeriodValueEndIsBeforeStart,
+			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := NewPeriod(tt.args.start, tt.args.end)
-			if (err != nil) != tt.wantErr {
+			if !reflect.DeepEqual(err, tt.wantErr){
 				t.Errorf("NewPeriod() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
@@ -196,5 +200,31 @@ func TestTimeError_Unwrap(t *testing.T) {
 	want := ErrTimeInvalidHourValue
 	if got != want {
 		t.Errorf("Unwrap()= %v, want= %v", got, want)
+	}
+}
+
+func TestPeriodError_Error(t *testing.T) {
+	err := &PeriodError{
+		Start: TimeForTest("11:00"),
+		End:   TimeForTest("09:00"),
+		Err:   ErrPeriodValueEndIsBeforeStart,
+	}
+
+	got := err.Error()
+
+	want := "invalid period value `11:00 - 09:00`: end is before start"
+	if got != want {
+		t.Errorf("PeriodError.Error() = %v, want %v", got, want)
+	}
+}
+
+func TestPeriodError_Unwrap(t *testing.T) {
+	err := &PeriodError{Err: ErrPeriodValueEndIsBeforeStart}
+
+	got := err.Unwrap()
+
+	want := ErrPeriodValueEndIsBeforeStart
+	if got != want {
+		t.Errorf("PeriodError.Unwrap()= %v, want= %v", got, want)
 	}
 }

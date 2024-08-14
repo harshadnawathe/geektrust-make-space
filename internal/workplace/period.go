@@ -1,7 +1,6 @@
 package workplace
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -11,7 +10,7 @@ type Period struct {
 
 func NewPeriod(start Time, end Time) (p Period, err error) {
 	if isTimeBefore(end, start) {
-		err = errors.New("end is before start")
+		err = &PeriodError{start, end, ErrPeriodValueEndIsBeforeStart}
 		return
 	}
 
@@ -87,4 +86,27 @@ func (err TimeValueError) Error() string {
 const (
 	ErrTimeInvalidHourValue   TimeValueError = "hour value must be between 0 and 23"
 	ErrTimeInvalidMinuteValue TimeValueError = "minute value must be between 0 and 59"
+)
+
+type PeriodError struct {
+	Start, End Time
+	Err        error
+}
+
+func (err *PeriodError) Error() string {
+	return fmt.Sprintf("invalid period value `%s - %s`: %s", err.Start, err.End, err.Err)
+}
+
+func (err *PeriodError) Unwrap() error {
+	return err.Err
+}
+
+type PeriodValueError string
+
+func (err PeriodValueError) Error() string {
+	return string(err)
+}
+
+const (
+	ErrPeriodValueEndIsBeforeStart PeriodValueError = "end is before start"
 )
