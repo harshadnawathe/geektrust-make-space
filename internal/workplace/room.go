@@ -3,6 +3,7 @@ package workplace
 import (
 	"errors"
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -145,6 +146,18 @@ func validateCapacity(r *room, n NumOfPeople) error {
 	if n > r.capacity {
 		return &RoomCapacityValidationError{r.name, r.capacity, n, ErrRoomCapacityIsTooSmall}
 	}
+
+	return nil
+}
+
+func addRoom(rooms *[]*room, name string, capacity NumOfPeople) error {
+	r, _ := newRoom(name, capacity)
+
+	*rooms = append(*rooms, r)
+
+	sort.Slice(*rooms, func(i, j int) bool {
+		return (*rooms)[i].capacity < (*rooms)[j].capacity
+	})
 
 	return nil
 }

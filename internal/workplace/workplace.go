@@ -3,7 +3,6 @@ package workplace
 import (
 	"errors"
 	"fmt"
-	"sort"
 )
 
 type Workplace struct {
@@ -16,13 +15,7 @@ func New() *Workplace {
 }
 
 func (wp *Workplace) AddRoom(name string, capacity NumOfPeople) {
-	r, _ := newRoom(name, capacity)
-
-	wp.rooms = append(wp.rooms, r)
-
-	sort.Slice(wp.rooms, func(i, j int) bool {
-		return wp.rooms[i].capacity < wp.rooms[j].capacity
-	})
+	_ = addRoom(&wp.rooms, name, capacity)
 }
 
 func (wp *Workplace) AddBufferTime(p Period) {
