@@ -10,7 +10,7 @@
 ~- Validation for Time~
 ~- Move Period and Time to separate file~
 ~- Validation for Book~
-- Validation for newRoom
+~- Validation for newRoom~
 - Workplace rooms should be unique
 ~- Room needs a constructor~
 - workplace package needs an error type

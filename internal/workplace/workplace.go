@@ -16,7 +16,9 @@ func New() *Workplace {
 }
 
 func (wp *Workplace) AddRoom(name string, capacity NumOfPeople) {
-	wp.rooms = append(wp.rooms, newRoom(name, capacity))
+	r, _ := newRoom(name, capacity)
+
+	wp.rooms = append(wp.rooms, r)
 
 	sort.Slice(wp.rooms, func(i, j int) bool {
 		return wp.rooms[i].capacity < wp.rooms[j].capacity
