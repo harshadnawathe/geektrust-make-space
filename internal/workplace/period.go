@@ -1,6 +1,7 @@
 package workplace
 
 import (
+	"errors"
 	"fmt"
 )
 
@@ -41,13 +42,18 @@ type Time struct {
 }
 
 func NewTime(hh uint8, mm uint8) (t Time, err error) {
+	var errs []error
+
 	if hh > 23 {
-		err = &TimeError{hh, mm, ErrTimeInvalidHourValue}
-		return
+		errs = append(errs, ErrTimeInvalidHourValue)
 	}
 
 	if mm > 59 {
-		err = &TimeError{hh, mm, ErrTimeInvalidMinuteValue}
+		errs = append(errs, ErrTimeInvalidMinuteValue)
+	}
+
+	if errs != nil {
+		err = &TimeError{hh, mm, errors.Join(errs...)}
 		return
 	}
 
