@@ -1,6 +1,7 @@
 package workplace
 
 import (
+	"errors"
 	"reflect"
 	"testing"
 )
@@ -82,7 +83,7 @@ func TestNewTime(t *testing.T) {
 				mm: 59,
 			},
 			want:    Time{},
-			wantErr: &TimeError{HH: 24, MM: 59, Err: ErrTimeInvalidHourValue},
+			wantErr: ErrTimeInvalidHourValue,
 		},
 		{
 			name: "error when minute value is greater than 59",
@@ -91,18 +92,34 @@ func TestNewTime(t *testing.T) {
 				mm: 60,
 			},
 			want:    Time{},
-			wantErr: &TimeError{HH: 12, MM: 60, Err: ErrTimeInvalidMinuteValue},
+			wantErr: ErrTimeInvalidMinuteValue,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := NewTime(tt.args.hh, tt.args.mm)
-			if !reflect.DeepEqual(err, tt.wantErr) {
-				t.Errorf("NewTime() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
+
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewTime() = %v, want %v", got, tt.want)
+			}
+
+			if tt.wantErr != nil {
+				if !errors.Is(err, tt.wantErr) {
+					t.Errorf("NewTime() error = %vi, wantErr %v", err, tt.wantErr)
+				}
+
+				var timeError *TimeError
+				if !errors.As(err, &timeError) {
+					t.Errorf("cannot use error %v as *TimeError", err)
+				}
+				
+				if timeError.HH != tt.args.hh {
+					t.Errorf("timeError.HH = %v, want = %v", timeError.HH, tt.args.hh)
+				}
+
+				if timeError.MM != tt.args.mm {
+          t.Errorf("timeError.MM = %v, want = %v", timeError.MM, tt.args.mm)
+        }
 			}
 		})
 	}
@@ -134,23 +151,35 @@ func TestNewPeriod(t *testing.T) {
 				start: TimeForTest("14:00"),
 				end:   TimeForTest("13:00"),
 			},
-			want:    Period{},
-			wantErr: &PeriodError{
-				Start: TimeForTest("14:00"),
-				End: TimeForTest("13:00"),
-				Err: ErrPeriodValueEndIsBeforeStart,
-			},
+			want: Period{},
+			wantErr: ErrPeriodValueEndIsBeforeStart,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := NewPeriod(tt.args.start, tt.args.end)
-			if !reflect.DeepEqual(err, tt.wantErr){
-				t.Errorf("NewPeriod() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
+			
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewPeriod() = %v, want %v", got, tt.want)
+			}
+
+			if tt.wantErr != nil {
+				if !errors.Is(err, tt.wantErr) {
+					t.Errorf("NewPeriod() error = %v, wantErr %v", err, tt.wantErr)
+				}
+
+				var periodError *PeriodError
+        if !errors.As(err, &periodError) {
+          t.Errorf("cannot use error %v as *PeriodError", err)
+        }
+
+				if periodError.Start != tt.args.start {
+					t.Errorf("periodError.Start= %v, want= %v", periodError.Start, tt.args.start)
+				}
+
+				if periodError.End != tt.args.end {
+					t.Errorf("periodError.End= %v, want= %v", periodError.End, tt.args.end)
+				}
 			}
 		})
 	}
