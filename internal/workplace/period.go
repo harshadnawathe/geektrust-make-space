@@ -5,6 +5,12 @@ import (
 	"fmt"
 )
 
+var (
+	ErrTimeInvalidHourValue        = errors.New("hour value must be between 0 and 23")
+	ErrTimeInvalidMinuteValue      = errors.New("minute value must be between 0 and 59")
+	ErrPeriodValueEndIsBeforeStart = errors.New("end is before start")
+)
+
 type Period struct {
 	start, end Time
 }
@@ -83,17 +89,6 @@ func (err *TimeError) Unwrap() error {
 	return err.Err
 }
 
-type TimeValueError string
-
-func (err TimeValueError) Error() string {
-	return string(err)
-}
-
-const (
-	ErrTimeInvalidHourValue   TimeValueError = "hour value must be between 0 and 23"
-	ErrTimeInvalidMinuteValue TimeValueError = "minute value must be between 0 and 59"
-)
-
 type PeriodError struct {
 	Start, End Time
 	Err        error
@@ -106,13 +101,3 @@ func (err *PeriodError) Error() string {
 func (err *PeriodError) Unwrap() error {
 	return err.Err
 }
-
-type PeriodValueError string
-
-func (err PeriodValueError) Error() string {
-	return string(err)
-}
-
-const (
-	ErrPeriodValueEndIsBeforeStart PeriodValueError = "end is before start"
-)
