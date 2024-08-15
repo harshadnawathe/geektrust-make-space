@@ -23,6 +23,8 @@ type room struct {
 	capacity NumOfPeople
 }
 
+type rooms []*room
+
 type RoomInitError struct {
 	Name     string
 	Capacity NumOfPeople
@@ -150,7 +152,7 @@ func validateCapacity(r *room, n NumOfPeople) error {
 	return nil
 }
 
-func addRoom(rooms *[]*room, name string, capacity NumOfPeople) error {
+func addRoom(rooms *rooms, name string, capacity NumOfPeople) error {
 	r, _ := newRoom(name, capacity)
 
 	*rooms = append(*rooms, r)
@@ -162,7 +164,7 @@ func addRoom(rooms *[]*room, name string, capacity NumOfPeople) error {
 	return nil
 }
 
-func findAndReserveRoom(rooms []*room, p Period, n NumOfPeople) (Reservation, error) {
+func findAndReserveRoom(rooms rooms, p Period, n NumOfPeople) (Reservation, error) {
 	for _, room := range rooms {
 		if reservation, err := reserve(room, p, n); err == nil {
 			return reservation, nil
@@ -176,7 +178,7 @@ type Vacancy struct {
 	Room string
 }
 
-func findVacancies(rooms []*room, p Period) []Vacancy {
+func findVacancies(rooms rooms, p Period) []Vacancy {
 	var vacancies []Vacancy
 	for _, room := range rooms {
 		if !isBooked(room, p) {

@@ -7,7 +7,7 @@ import (
 
 type Workplace struct {
 	bufTimes []Period
-	rooms    []*room
+	rooms    rooms
 }
 
 func New() *Workplace {
