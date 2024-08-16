@@ -153,7 +153,10 @@ func validateCapacity(r *room, n NumOfPeople) error {
 }
 
 func addRoom(rooms *rooms, name string, capacity NumOfPeople) error {
-	r, _ := newRoom(name, capacity)
+	r, err := newRoom(name, capacity)
+	if err != nil {
+		return fmt.Errorf("cannot add room: %w", err)
+	}
 
 	*rooms = append(*rooms, r)
 

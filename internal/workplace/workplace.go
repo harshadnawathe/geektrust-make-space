@@ -14,8 +14,8 @@ func New() *Workplace {
 	return &Workplace{}
 }
 
-func (wp *Workplace) AddRoom(name string, capacity NumOfPeople) {
-	_ = addRoom(&wp.rooms, name, capacity)
+func (wp *Workplace) AddRoom(name string, capacity NumOfPeople) error {
+	return addRoom(&wp.rooms, name, capacity)
 }
 
 func (wp *Workplace) AddBufferTime(p Period) {

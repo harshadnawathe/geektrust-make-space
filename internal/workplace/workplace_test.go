@@ -1,6 +1,7 @@
 package workplace_test
 
 import (
+	"errors"
 	"geektrust/internal/workplace"
 	"reflect"
 	"testing"
@@ -20,17 +21,50 @@ func Test_Workplace_AvailableRooms_Returns_EmptyList(t *testing.T) {
 	}
 }
 
-func Test_Workplace_AvailableRooms_Returns_AllRooms(t *testing.T) {
-	w := workplace.Build(
-		workplace.WithRoom("C-Cave", 3),
-		workplace.WithRoom("D-Tower", 7),
-	)
+func Test_Workplace_AvailableRooms_Returns_AddedRooms(t *testing.T) {
+	type args struct {
+		name     string
+		capacity workplace.NumOfPeople
+	}
 
-	got := w.AvailableRooms(workplace.PeriodForTest("10:00", "12:00"))
+	tests := []struct {
+		name    string
+		args    args
+		want    []workplace.Vacancy
+		wantErr error
+	}{
+		{
+			"room become available when no error",
+			args{"C-Cave", 3},
+			[]workplace.Vacancy{{"C-Cave"}},
+			nil,
+		},
+		{
+			"room does not become available when error",
+			args{"C-Cave", 0},
+			nil,
+			workplace.ErrRoomCapacityIsZero,
+		},
+	}
 
-	want := []workplace.Vacancy{{Room: "C-Cave"}, {Room: "D-Tower"}}
-	if !reflect.DeepEqual(want, got) {
-		t.Errorf("AvailableRooms()= %v, want= %v", got, want)
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			w := workplace.Build()
+
+			gotErr := w.AddRoom(test.args.name, test.args.capacity)
+
+			got := w.AvailableRooms(workplace.PeriodForTest("10:00", "12:00"))
+
+			if !reflect.DeepEqual(got, test.want) {
+				t.Errorf("AvailableRooms()= %v, want= %v", got, test.want)
+			}
+
+			if test.wantErr != nil {
+				if !errors.Is(gotErr, test.wantErr) {
+					t.Errorf("AddRoom()= %v, wantErr= %v", gotErr, test.wantErr)
+				}
+			}
+		})
 	}
 }
 
