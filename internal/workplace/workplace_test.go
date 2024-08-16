@@ -186,44 +186,44 @@ func Test_Workplace_Book_Reserves_Next_Bigger_Room_When_A_Smaller_Room_Is_Unavai
 
 func Test_Workplace_Book_DuringBufferTime(t *testing.T) {
 	tests := []struct {
-		Name     string
-		Period   workplace.Period
-		IsErrNil bool
+		Name    string
+		Period  workplace.Period
+		wantErr error
 	}{
 		{
-			Name:     "err when start time is buffer time start",
-			Period:   workplace.PeriodForTest("09:00", "10:00"),
-			IsErrNil: false,
+			Name:    "err when start time is buffer time start",
+			Period:  workplace.PeriodForTest("09:00", "10:00"),
+			wantErr: workplace.ErrPeriodOverlapsWithBufferTime,
 		},
 		{
-			Name:     "err when end time is buffer time end",
-			Period:   workplace.PeriodForTest("08:00", "09:15"),
-			IsErrNil: false,
+			Name:    "err when end time is buffer time end",
+			Period:  workplace.PeriodForTest("08:00", "09:15"),
+			wantErr: workplace.ErrPeriodOverlapsWithBufferTime,
 		},
 		{
-			Name:     "err when start time in buffer time",
-			Period:   workplace.PeriodForTest("09:05", "10:00"),
-			IsErrNil: false,
+			Name:    "err when start time in buffer time",
+			Period:  workplace.PeriodForTest("09:05", "10:00"),
+			wantErr: workplace.ErrPeriodOverlapsWithBufferTime,
 		},
 		{
-			Name:     "err when end time in buffer time",
-			Period:   workplace.PeriodForTest("08:00", "09:05"),
-			IsErrNil: false,
+			Name:    "err when end time in buffer time",
+			Period:  workplace.PeriodForTest("08:00", "09:05"),
+			wantErr: workplace.ErrPeriodOverlapsWithBufferTime,
 		},
 		{
-			Name:     "err when buffer time in period",
-			Period:   workplace.PeriodForTest("13:00", "14:00"),
-			IsErrNil: false,
+			Name:    "err when buffer time in period",
+			Period:  workplace.PeriodForTest("13:00", "14:00"),
+			wantErr: workplace.ErrPeriodOverlapsWithBufferTime,
 		},
 		{
-			Name:     "not err when start time is buffer end time",
-			Period:   workplace.PeriodForTest("09:15", "10:00"),
-			IsErrNil: true,
+			Name:    "not err when start time is buffer end time",
+			Period:  workplace.PeriodForTest("09:15", "10:00"),
+			wantErr: nil ,
 		},
 		{
-			Name:     "not err when end time is buffer start time",
-			Period:   workplace.PeriodForTest("08:00", "09:00"),
-			IsErrNil: true,
+			Name:    "not err when end time is buffer start time",
+			Period:  workplace.PeriodForTest("08:00", "09:00"),
+			wantErr: nil,
 		},
 	}
 
@@ -237,8 +237,8 @@ func Test_Workplace_Book_DuringBufferTime(t *testing.T) {
 
 			_, err := w.Book(test.Period, 2)
 
-			if got := err == nil; test.IsErrNil != got {
-				t.Errorf("Book()= %v, want= %v", got, test.IsErrNil)
+			if !errors.Is(err, test.wantErr) {
+				t.Errorf("Book() error= %v, want= %v", err, test.wantErr)
 			}
 		})
 	}
@@ -325,7 +325,7 @@ func Test_Workplace_Book_Checks_If_Period_In_15_Minutes_Increments(t *testing.T)
 	tests := []struct {
 		name    string
 		args    args
-		wantErr bool
+		wantErr error
 	}{
 		{
 			name: "error when start time is not in 15 minutes increments",
@@ -333,7 +333,7 @@ func Test_Workplace_Book_Checks_If_Period_In_15_Minutes_Increments(t *testing.T)
 				p: workplace.PeriodForTest("10:03", "11:00"),
 				n: 2,
 			},
-			wantErr: true,
+			wantErr: workplace.ErrStartTimeIsNotIn15MinutesIncrements,
 		},
 		{
 			name: "no error when start time is not in 15 minutes increments",
@@ -341,7 +341,7 @@ func Test_Workplace_Book_Checks_If_Period_In_15_Minutes_Increments(t *testing.T)
 				p: workplace.PeriodForTest("10:00", "11:00"),
 				n: 2,
 			},
-			wantErr: false,
+			wantErr: nil,
 		},
 		{
 			name: "error when end time is not in 15 minutes increments",
@@ -349,7 +349,7 @@ func Test_Workplace_Book_Checks_If_Period_In_15_Minutes_Increments(t *testing.T)
 				p: workplace.PeriodForTest("10:00", "11:16"),
 				n: 2,
 			},
-			wantErr: true,
+			wantErr: workplace.ErrEndTimeIsNotIn15MinutesIncrements,
 		},
 		{
 			name: "no error when end time is not in 15 minutes increments",
@@ -357,7 +357,7 @@ func Test_Workplace_Book_Checks_If_Period_In_15_Minutes_Increments(t *testing.T)
 				p: workplace.PeriodForTest("10:00", "11:00"),
 				n: 2,
 			},
-			wantErr: false,
+			wantErr: nil,
 		},
 	}
 
@@ -367,7 +367,7 @@ func Test_Workplace_Book_Checks_If_Period_In_15_Minutes_Increments(t *testing.T)
 
 			_, err := w.Book(test.args.p, test.args.n)
 
-			if test.wantErr != (err != nil) {
+			if !errors.Is(err, test.wantErr) {
 				t.Errorf("Book() error= %v, wantErr= %v", err, test.wantErr)
 			}
 		})

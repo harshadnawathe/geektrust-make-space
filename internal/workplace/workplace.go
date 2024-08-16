@@ -5,6 +5,12 @@ import (
 	"fmt"
 )
 
+var (
+	ErrStartTimeIsNotIn15MinutesIncrements = errors.New("start time is not in 15 min increments")
+	ErrEndTimeIsNotIn15MinutesIncrements   = errors.New("end time is not in 15 min increments")
+	ErrPeriodOverlapsWithBufferTime        = errors.New("period overlaps with buffer time")
+)
+
 type Workplace struct {
 	bufTimes []Period
 	rooms    rooms
@@ -33,15 +39,11 @@ func (wp *Workplace) AvailableRooms(p Period) []Vacancy {
 func (wp *Workplace) Book(p Period, n NumOfPeople) (r Reservation, err error) {
 	err = validatePeriod(wp, p)
 	if err != nil {
-		err = fmt.Errorf("cannot book: %w", err)
+		err = &RoomReserveError{p, n, err}
 		return
 	}
 
 	r, err = findAndReserveRoom(wp.rooms, p, n)
-	if err != nil {
-		err = fmt.Errorf("cannot book: %w", err)
-		return
-	}
 
 	return
 }
@@ -50,17 +52,36 @@ func isInBufferTime(wp *Workplace, p Period) bool {
 	return isAnyOverlapping(wp.bufTimes, p)
 }
 
+type PeriodValidationError struct {
+	Period Period
+	Err    error
+}
+
+func (err *PeriodValidationError) Error() string {
+	return fmt.Sprintf("invalid period `%v`: %s", err.Period, err.Err)
+}
+
+func (err *PeriodValidationError) Unwrap() error {
+	return err.Err
+}
+
 func validatePeriod(wp *Workplace, p Period) error {
+	var errs []error
+
 	if p.start.mm%15 != 0 {
-		return errors.New("start time is not in 15 min increments")
+		errs = append(errs, ErrStartTimeIsNotIn15MinutesIncrements)
 	}
 
 	if p.end.mm%15 != 0 {
-		return errors.New("end time is not in 15 min increments")
+		errs = append(errs, ErrEndTimeIsNotIn15MinutesIncrements)
 	}
 
 	if isInBufferTime(wp, p) {
-		return errors.New("period overlaps with buffer time")
+		errs = append(errs, ErrPeriodOverlapsWithBufferTime)
+	}
+
+	if len(errs) > 0 {
+		return &PeriodValidationError{p, errors.Join(errs...)}
 	}
 
 	return nil

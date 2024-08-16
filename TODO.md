@@ -13,7 +13,7 @@
 ~- Validation for newRoom~
 - Workplace rooms should be unique
 ~- Room needs a constructor~
-- workplace package needs an error type
+~- workplace package needs an error type~
 ~- create error type NewTimeErr~
 ~- create error type NewPeriodErr~
 ~- Book room tests might be refactored as a table test~
