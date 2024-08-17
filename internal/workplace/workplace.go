@@ -28,7 +28,7 @@ func (wp *Workplace) AddBufferTime(p Period) {
 	wp.bufTimes = append(wp.bufTimes, p)
 }
 
-func (wp *Workplace) AvailableRooms(p Period) []Vacancy {
+func (wp *Workplace) RoomsAvailable(p Period) []Vacancy {
 	if isInBufferTime(wp, p) {
 		return nil
 	}

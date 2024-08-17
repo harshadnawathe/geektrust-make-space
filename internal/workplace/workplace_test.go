@@ -7,21 +7,21 @@ import (
 	"testing"
 )
 
-func Test_Workplace_AvailableRooms_Returns_EmptyList(t *testing.T) {
+func Test_Workplace_RoomsAvailable_Returns_EmptyList(t *testing.T) {
 	w := workplace.Build(
 		workplace.Default(),
 		workplace.WithNoRooms(),
 	)
 
-	vacancies := w.AvailableRooms(workplace.PeriodForTest("10:00", "12:00"))
+	vacancies := w.RoomsAvailable(workplace.PeriodForTest("10:00", "12:00"))
 
 	want := 0
 	if got := len(vacancies); want != got {
-		t.Errorf("AvailableRooms()= %v, want= %v", got, want)
+		t.Errorf("RoomsAvailable()= %v, want= %v", got, want)
 	}
 }
 
-func Test_Workplace_AvailableRooms_Returns_AddedRooms(t *testing.T) {
+func Test_Workplace_RoomsAvailable_Returns_AddedRooms(t *testing.T) {
 	type args struct {
 		name     string
 		capacity workplace.NumOfPeople
@@ -53,10 +53,10 @@ func Test_Workplace_AvailableRooms_Returns_AddedRooms(t *testing.T) {
 
 			gotErr := w.AddRoom(test.args.name, test.args.capacity)
 
-			got := w.AvailableRooms(workplace.PeriodForTest("10:00", "12:00"))
+			got := w.RoomsAvailable(workplace.PeriodForTest("10:00", "12:00"))
 
 			if !reflect.DeepEqual(got, test.want) {
-				t.Errorf("AvailableRooms()= %v, want= %v", got, test.want)
+				t.Errorf("RoomsAvailable()= %v, want= %v", got, test.want)
 			}
 
 			if test.wantErr != nil {
@@ -68,21 +68,21 @@ func Test_Workplace_AvailableRooms_Returns_AddedRooms(t *testing.T) {
 	}
 }
 
-func Test_Workplace_AvailableRooms_Returns_AllRooms_InSortedOrderOfCapacity(t *testing.T) {
+func Test_Workplace_RoomsAvailable_Returns_AllRooms_InSortedOrderOfCapacity(t *testing.T) {
 	w := workplace.Build(
 		workplace.WithRoom("D-Tower", 7),
 		workplace.WithRoom("C-Cave", 3),
 	)
 
-	got := w.AvailableRooms(workplace.PeriodForTest("10:00", "12:00"))
+	got := w.RoomsAvailable(workplace.PeriodForTest("10:00", "12:00"))
 
 	want := []workplace.Vacancy{{Room: "C-Cave"}, {Room: "D-Tower"}}
 	if !reflect.DeepEqual(want, got) {
-		t.Errorf("AvailableRooms()= %v, want= %v", got, want)
+		t.Errorf("RoomsAvailable()= %v, want= %v", got, want)
 	}
 }
 
-func Test_Workplace_AvailableRooms_DuringBufferTime(t *testing.T) {
+func Test_Workplace_RoomsAvailable_DuringBufferTime(t *testing.T) {
 	w := workplace.Build(
 		workplace.WithRoom("C-Cave", 3),
 		workplace.WithRoom("D-Tower", 7),
@@ -134,10 +134,10 @@ func Test_Workplace_AvailableRooms_DuringBufferTime(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.Name, func(t *testing.T) {
-			vacancies := w.AvailableRooms(test.Period)
+			vacancies := w.RoomsAvailable(test.Period)
 
 			if got := len(vacancies); test.Want != got {
-				t.Errorf("AvailableRooms()= %v, want= %v", got, test.Want)
+				t.Errorf("RoomsAvailable()= %v, want= %v", got, test.Want)
 			}
 		})
 	}
@@ -244,7 +244,7 @@ func Test_Workplace_Book_DuringBufferTime(t *testing.T) {
 	}
 }
 
-func Test_Workplace_AvailableRooms_After_Book(t *testing.T) {
+func Test_Workplace_RoomsAvailable_After_Book(t *testing.T) {
 	tests := []struct {
 		Name   string
 		Want   []workplace.Vacancy
@@ -296,10 +296,10 @@ func Test_Workplace_AvailableRooms_After_Book(t *testing.T) {
 			_, _ = w.Book(workplace.PeriodForTest("10:00", "11:00"), 2)
 			_, _ = w.Book(workplace.PeriodForTest("14:00", "15:00"), 5)
 
-			got := w.AvailableRooms(test.Period)
+			got := w.RoomsAvailable(test.Period)
 
 			if !reflect.DeepEqual(got, test.Want) {
-				t.Errorf("AvailableRooms()= %v, want= %v", got, test.Want)
+				t.Errorf("RoomsAvailable()= %v, want= %v", got, test.Want)
 			}
 		})
 	}
