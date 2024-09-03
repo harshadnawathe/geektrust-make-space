@@ -25,6 +25,6 @@ func (err *InvalidRequestTypeError) Unwrap() error {
 	return err.Err
 }
 
-func newInvalidRequestTypeError(req, exp interface{}) error {
+func newInvalidRequestTypeError(req, exp interface{}) *InvalidRequestTypeError {
 	return &InvalidRequestTypeError{req, exp, ErrInvalidRequestType}
 }
