@@ -40,7 +40,7 @@ type RoomsAvailabler interface {
 func getRoomsAvailableRequest(request interface{}) (RoomsAvailableRequest, error) {
 	roomsAvailableRequest, ok := request.(RoomsAvailableRequest)
 	if !ok {
-		return RoomsAvailableRequest{}, ErrRoomsAvailableEndpointInvalidRequestType
+		return RoomsAvailableRequest{}, newInvalidRequestTypeError(request, roomsAvailableRequest)
 	}
 	return roomsAvailableRequest, nil
 }

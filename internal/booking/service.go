@@ -5,10 +5,7 @@ import (
 	"fmt"
 )
 
-var (
-	ErrInvalidRequestType                       = errors.New("invalid request type")
-	ErrRoomsAvailableEndpointInvalidRequestType = fmt.Errorf("request type must be %T: %w", RoomsAvailableRequest{}, ErrInvalidRequestType)
-)
+var ErrInvalidRequestType = errors.New("invalid request type")
 
 type InvalidRequestTypeError struct {
 	Request, ExpectedType interface{}

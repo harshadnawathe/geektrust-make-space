@@ -154,7 +154,7 @@ func TestMakeRoomsAvailableEndpoint(t *testing.T) {
 				},
 			},
 			want:    nil,
-			wantErr: ErrRoomsAvailableEndpointInvalidRequestType,
+			wantErr: ErrInvalidRequestType,
 		},
 	}
 
