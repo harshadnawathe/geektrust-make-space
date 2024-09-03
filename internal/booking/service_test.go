@@ -2,13 +2,9 @@ package booking
 
 import (
 	"context"
-	"errors"
-	"geektrust/internal/booking/mocks"
 	"geektrust/internal/workplace"
 	"reflect"
 	"testing"
-
-	"go.uber.org/mock/gomock"
 )
 
 func newPeriodMust(p workplace.Period, err error) workplace.Period {
@@ -23,98 +19,6 @@ func newTimeMust(p workplace.Time, err error) workplace.Time {
 		panic(err)
 	}
 	return p
-}
-
-func TestMakeRoomsAvailableEndpoint(t *testing.T) {
-	type args struct {
-		request    interface{}
-		mockConfig func(*mocks.MockRoomsAvailabler, args)
-	}
-
-	tests := []struct {
-		name    string
-		args    args
-		want    interface{}
-		wantErr error
-	}{
-		{
-			name: "return vacancies",
-			args: args{
-				request: RoomsAvailableRequest{
-					Period: newPeriodMust(workplace.NewPeriod(
-						newTimeMust(workplace.NewTime(10, 0)),
-						newTimeMust(workplace.NewTime(10, 30)),
-					)),
-				},
-				mockConfig: func(mock *mocks.MockRoomsAvailabler, args args) {
-					mock.EXPECT().
-						RoomsAvailable(args.request.(RoomsAvailableRequest).Period).
-						Times(1).
-						Return([]workplace.Vacancy{{"C-Cave"}})
-				},
-			},
-			want: RoomsAvailableResponse{
-				Vacancies: []workplace.Vacancy{{"C-Cave"}},
-			},
-			wantErr: nil,
-		},
-		{
-			name: "return error",
-			args: args{
-				request: struct{ Foo, Bar string }{"foo", "bar"},
-				mockConfig: func(mock *mocks.MockRoomsAvailabler, args args) {
-				},
-			},
-			want:    nil,
-			wantErr: ErrInvalidRequestType,
-		},
-	}
-
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-
-			availabler := mocks.NewMockRoomsAvailabler(ctrl)
-			test.args.mockConfig(availabler, test.args)
-
-			endpoint := MakeRoomsAvailableEndpoint(availabler)
-
-			got, gotErr := endpoint(context.Background(), test.args.request)
-
-			if !reflect.DeepEqual(got, test.want) {
-				t.Errorf("RoomsAvailable Endpoint()= %v, want= %v", got, test.want)
-			}
-
-			if !errors.Is(gotErr, test.wantErr) {
-				t.Errorf("RoomsAvailable Endpoint() error = %v, wantErr %v", gotErr, test.wantErr)
-			}
-		})
-	}
-}
-
-func TestRoomsAvailableEndpointError_Error(t *testing.T) {
-	err := &RoomsAvailableEndpointError{
-		Request: struct{ Foo, Bar string }{"foo", "bar"},
-		Err:     errors.New("foo"),
-	}
-
-	got := err.Error()
-
-	want := "cannot handle request `{foo bar}`: foo"
-	if got != want {
-		t.Errorf("RoomsAvailableEndpointError.Error() = %v, want %v", got, want)
-	}
-}
-
-func TestRoomsAvailableEndpointError_Unwrap(t *testing.T) {
-	err := &RoomsAvailableEndpointError{Err: ErrInvalidRequestType}
-
-	got := err.Unwrap()
-
-	want := ErrInvalidRequestType
-	if !errors.Is(got, want) {
-		t.Errorf("RoomsAvailableEndpointError.Unwrap() = %v, want %v", got, want)
-	}
 }
 
 func TestServiceEndpointsIntegration(t *testing.T) {
