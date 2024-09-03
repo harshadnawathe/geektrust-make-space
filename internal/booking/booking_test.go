@@ -1,52 +1,39 @@
-package booking
+package booking_test
 
 import (
 	"context"
+	"geektrust/internal/booking"
 	"geektrust/internal/workplace"
 	"reflect"
 	"testing"
 )
 
-func newPeriodMust(p workplace.Period, err error) workplace.Period {
-	if err != nil {
-		panic(err)
-	}
-	return p
-}
-
-func newTimeMust(p workplace.Time, err error) workplace.Time {
-	if err != nil {
-		panic(err)
-	}
-	return p
-}
-
-func TestServiceEndpointsIntegration(t *testing.T) {
+func TestBookingService(t *testing.T) {
 	w := workplace.New()
 
 	_ = w.AddRoom("C-Cave", 3)
 	_ = w.AddRoom("D-Tower", 7)
 
-	w.AddBufferTime(newPeriodMust(workplace.NewPeriod(
-		newTimeMust(workplace.NewTime(9, 0)),
-		newTimeMust(workplace.NewTime(9, 15)),
+	w.AddBufferTime(booking.NewPeriodMust(workplace.NewPeriod(
+		booking.NewTimeMust(workplace.NewTime(9, 0)),
+		booking.NewTimeMust(workplace.NewTime(9, 15)),
 	)))
 
-	roomsAvailableEndpoint := MakeRoomsAvailableEndpoint(w)
-	bookRoomEndpoint := MakeBookRoomEndpoint(w)
+	roomsAvailableEndpoint := booking.MakeRoomsAvailableEndpoint(w)
+	bookRoomEndpoint := booking.MakeBookRoomEndpoint(w)
 
 	var err error
 
 	// Test roomsAvailableEndpoint before booking
 	var roomsAvailableRequest, roomsAvailableResponse interface{}
-	wantRoomsAvailableResponse := RoomsAvailableResponse{
+	wantRoomsAvailableResponse := booking.RoomsAvailableResponse{
 		Vacancies: []workplace.Vacancy{{"C-Cave"}, {"D-Tower"}},
 	}
 
-	roomsAvailableRequest = RoomsAvailableRequest{
-		Period: newPeriodMust(workplace.NewPeriod(
-			newTimeMust(workplace.NewTime(10, 0)),
-			newTimeMust(workplace.NewTime(10, 30)),
+	roomsAvailableRequest = booking.RoomsAvailableRequest{
+		Period: booking.NewPeriodMust(workplace.NewPeriod(
+			booking.NewTimeMust(workplace.NewTime(10, 0)),
+			booking.NewTimeMust(workplace.NewTime(10, 30)),
 		)),
 	}
 
@@ -63,15 +50,15 @@ func TestServiceEndpointsIntegration(t *testing.T) {
 
 	var bookRoomRequest, bookRoomResponse interface{}
 
-	bookRoomRequest = BookRoomRequest{
+	bookRoomRequest = booking.BookRoomRequest{
 		NumOfPeople: 2,
-		Period: newPeriodMust(workplace.NewPeriod(
-			newTimeMust(workplace.NewTime(10, 0)),
-			newTimeMust(workplace.NewTime(11, 0)),
+		Period: booking.NewPeriodMust(workplace.NewPeriod(
+			booking.NewTimeMust(workplace.NewTime(10, 0)),
+			booking.NewTimeMust(workplace.NewTime(11, 0)),
 		)),
 	}
 
-	wantBookRoomResponse := BookRoomResponse{Reservation: workplace.Reservation{Room: "C-Cave"}, Err: nil}
+	wantBookRoomResponse := booking.BookRoomResponse{Reservation: workplace.Reservation{Room: "C-Cave"}, Err: nil}
 
 	bookRoomResponse, err = bookRoomEndpoint(context.Background(), bookRoomRequest)
 	if err != nil {
@@ -83,14 +70,14 @@ func TestServiceEndpointsIntegration(t *testing.T) {
 	}
 
 	// Test roomsAvailableEndpoint after booking
-	wantRoomsAvailableResponse = RoomsAvailableResponse{
+	wantRoomsAvailableResponse = booking.RoomsAvailableResponse{
 		Vacancies: []workplace.Vacancy{{"D-Tower"}},
 	}
 
-	roomsAvailableRequest = RoomsAvailableRequest{
-		Period: newPeriodMust(workplace.NewPeriod(
-			newTimeMust(workplace.NewTime(10, 0)),
-			newTimeMust(workplace.NewTime(10, 30)),
+	roomsAvailableRequest = booking.RoomsAvailableRequest{
+		Period: booking.NewPeriodMust(workplace.NewPeriod(
+			booking.NewTimeMust(workplace.NewTime(10, 0)),
+			booking.NewTimeMust(workplace.NewTime(10, 30)),
 		)),
 	}
 
