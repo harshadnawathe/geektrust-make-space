@@ -42,7 +42,7 @@ type Booker interface {
 func getBookRoomRequest(request interface{}) (BookRoomRequest, error) {
 	bookRoomRequest, ok := request.(BookRoomRequest)
 	if !ok {
-		return BookRoomRequest{}, ErrBookRoomEndpointInvalidRequestType
+		return BookRoomRequest{}, newInvalidRequestTypeError(request, bookRoomRequest)
 	}
 	return bookRoomRequest, nil
 }

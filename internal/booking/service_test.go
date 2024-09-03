@@ -87,7 +87,7 @@ func TestMakeBookRoomEndpoint(t *testing.T) {
 				},
 			},
 			want:    nil,
-			wantErr: ErrBookRoomEndpointInvalidRequestType,
+			wantErr: ErrInvalidRequestType,
 		},
 	}
 
