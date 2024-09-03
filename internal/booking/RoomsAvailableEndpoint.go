@@ -8,7 +8,7 @@ import (
 
 // RoomsAvailable service endpoint
 
-func MakeRoomsAvailableEndpoint(roomsAvailabler RoomsAvailabler) EndpointFunc {
+func MakeRoomsAvailableEndpoint(roomsAvailabler RoomsAvailabler) func(context.Context, interface{}) (interface{}, error) {
 	return func(_ context.Context, request interface{}) (interface{}, error) {
 		roomsAvailableRequest, err := getRoomsAvailableRequest(request)
 		if err != nil {

@@ -7,7 +7,7 @@ import (
 )
 
 // BookRoom service endpoint
-func MakeBookRoomEndpoint(booker Booker) EndpointFunc {
+func MakeBookRoomEndpoint(booker Booker) func(context.Context, interface{}) (interface{}, error) {
 	return func(_ context.Context, request interface{}) (interface{}, error) {
 		bookRoomRequest, err := getBookRoomRequest(request)
 		if err != nil {
@@ -38,7 +38,6 @@ type BookRoomResponse struct {
 type Booker interface {
 	Book(workplace.Period, workplace.NumOfPeople) (workplace.Reservation, error)
 }
-
 
 func getBookRoomRequest(request interface{}) (BookRoomRequest, error) {
 	bookRoomRequest, ok := request.(BookRoomRequest)
