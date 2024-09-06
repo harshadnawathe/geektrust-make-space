@@ -16,9 +16,9 @@ func NewTimeMust(hh, mm uint8) Time {
 
 func NewPeriodMust(start, end Time) Period {
 	period, err := NewPeriod(start, end)
-  if err != nil {
-    panic(err)
-  }
+	if err != nil {
+		panic(err)
+	}
 
 	return period
 }

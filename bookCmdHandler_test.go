@@ -19,7 +19,7 @@ func TestMakeBookCommandHandler(t *testing.T) {
 	}{
 		{
 			name: "write INCORRECT_INPUT when command doesn't match",
-			args: args {
+			args: args{
 				cmd: "VACANCY 12:00 12:30",
 			},
 			wantW: "INCORRECT_INPUT\n",

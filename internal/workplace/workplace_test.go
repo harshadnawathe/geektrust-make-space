@@ -218,7 +218,7 @@ func Test_Workplace_Book_DuringBufferTime(t *testing.T) {
 		{
 			Name:    "not err when start time is buffer end time",
 			Period:  workplace.PeriodForTest("09:15", "10:00"),
-			wantErr: nil ,
+			wantErr: nil,
 		},
 		{
 			Name:    "not err when end time is buffer start time",

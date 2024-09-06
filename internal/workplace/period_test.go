@@ -112,14 +112,14 @@ func TestNewTime(t *testing.T) {
 				if !errors.As(err, &timeError) {
 					t.Errorf("cannot use error %v as *TimeError", err)
 				}
-				
+
 				if timeError.HH != tt.args.hh {
 					t.Errorf("timeError.HH = %v, want = %v", timeError.HH, tt.args.hh)
 				}
 
 				if timeError.MM != tt.args.mm {
-          t.Errorf("timeError.MM = %v, want = %v", timeError.MM, tt.args.mm)
-        }
+					t.Errorf("timeError.MM = %v, want = %v", timeError.MM, tt.args.mm)
+				}
 			}
 		})
 	}
@@ -151,14 +151,14 @@ func TestNewPeriod(t *testing.T) {
 				start: TimeForTest("14:00"),
 				end:   TimeForTest("13:00"),
 			},
-			want: Period{},
+			want:    Period{},
 			wantErr: ErrPeriodValueEndIsBeforeStart,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := NewPeriod(tt.args.start, tt.args.end)
-			
+
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewPeriod() = %v, want %v", got, tt.want)
 			}
@@ -169,9 +169,9 @@ func TestNewPeriod(t *testing.T) {
 				}
 
 				var periodError *PeriodError
-        if !errors.As(err, &periodError) {
-          t.Errorf("cannot use error %v as *PeriodError", err)
-        }
+				if !errors.As(err, &periodError) {
+					t.Errorf("cannot use error %v as *PeriodError", err)
+				}
 
 				if periodError.Start != tt.args.start {
 					t.Errorf("periodError.Start= %v, want= %v", periodError.Start, tt.args.start)

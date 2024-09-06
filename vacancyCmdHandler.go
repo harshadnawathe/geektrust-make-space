@@ -9,7 +9,6 @@ import (
 	"strings"
 )
 
-
 var vacancyCommandPattern = regexp.MustCompile(`^VACANCY\s+(\d\d:\d\d)\s+(\d\d:\d\d)$`)
 
 func MakeVacancyCommandHandler(wp *workplace.Workplace) func(context.Context, io.Writer, string) {

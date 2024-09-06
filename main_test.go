@@ -28,7 +28,7 @@ func Test_main(t *testing.T) {
 		want  string
 	}{
 		{
-			name: "process input 1",
+			name:  "process input 1",
 			input: "sample_input/input1.txt",
 			want: `C-Cave D-Tower G-Mansion
 C-Cave
@@ -45,7 +45,7 @@ NO_VACANT_ROOM
 `,
 		},
 		{
-			name: "process input 2",
+			name:  "process input 2",
 			input: "sample_input/input2.txt",
 			want: `C-Cave
 C-Cave

@@ -21,7 +21,7 @@ func (mux *CommandMux) HandlePattern(pattern *regexp.Regexp, handler Handler) {
 }
 
 func (mux *CommandMux) HandlePatternFunc(pattern *regexp.Regexp, f func(context.Context, io.Writer, string)) {
-  mux.HandlePattern(pattern, HandlerFunc(f))
+	mux.HandlePattern(pattern, HandlerFunc(f))
 }
 
 func (mux *CommandMux) Handle(ctx context.Context, w io.Writer, cmd string) {

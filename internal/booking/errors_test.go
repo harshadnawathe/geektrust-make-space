@@ -18,7 +18,7 @@ func TestInvalidRequestTypeError_Error(t *testing.T) {
 
 func TestInvalidRequestTypeError_Unwrap(t *testing.T) {
 	err := &InvalidRequestTypeError{
-		Err:          ErrInvalidRequestType,
+		Err: ErrInvalidRequestType,
 	}
 
 	got := err.Unwrap()
@@ -34,16 +34,16 @@ func Test_newInvalidRequestTypeError(t *testing.T) {
 
 	wantRequest := "a"
 	if got := err.Request; got != wantRequest {
-    t.Errorf("newInvalidRequestTypeError() = %v, want %v", got, wantRequest)
-  }
+		t.Errorf("newInvalidRequestTypeError() = %v, want %v", got, wantRequest)
+	}
 
 	wantExpectedType := "b"
-  if got := err.ExpectedType; got != wantExpectedType {
+	if got := err.ExpectedType; got != wantExpectedType {
 		t.Errorf("newInvalidRequestTypeError() = %v, want %v", got, wantExpectedType)
 	}
 
 	wantErr := ErrInvalidRequestType
 	if got := err.Err; got != wantErr {
-    t.Errorf("newInvalidRequestTypeError() = %v, want %v", got, wantErr)
-  }
+		t.Errorf("newInvalidRequestTypeError() = %v, want %v", got, wantErr)
+	}
 }

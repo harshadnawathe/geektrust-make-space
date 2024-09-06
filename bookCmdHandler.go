@@ -33,7 +33,7 @@ func MakeBookCommandHandler(wp *workplace.Workplace) func(context.Context, io.Wr
 		}
 
 		reservation, err := wp.Book(period, workplace.NumOfPeople(personCapacity))
-		
+
 		if errors.Is(err, workplace.ErrRoomNoVacantRoom) || errors.Is(err, workplace.ErrPeriodOverlapsWithBufferTime) {
 			_, _ = fmt.Fprintln(w, noVacantRoom)
 			return

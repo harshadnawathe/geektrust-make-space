@@ -38,9 +38,9 @@ func (wp *Workplace) RoomsAvailable(p Period) []Vacancy {
 
 func (wp *Workplace) Book(p Period, n NumOfPeople) (r Reservation, err error) {
 	err = validateBooking(wp, p, n)
-  if err != nil {
-    return
-  }
+	if err != nil {
+		return
+	}
 
 	r, err = findAndReserveRoom(wp.rooms, p, n)
 

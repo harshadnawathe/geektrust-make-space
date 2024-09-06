@@ -12,5 +12,5 @@ type Handler interface {
 type HandlerFunc func(context.Context, io.Writer, string)
 
 func (f HandlerFunc) Handle(ctx context.Context, w io.Writer, cmd string) {
-  f(ctx, w, cmd)
+	f(ctx, w, cmd)
 }
