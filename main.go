@@ -2,11 +2,16 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"os"
 )
 
 func main() {
+	wp := makeWorkplace()
+	handler := MakeWorkplaceCommandHandler(wp)
+	ctx := context.Background()
+
 	cliArgs := os.Args[1:]
 
 	if len(cliArgs) == 0 {
@@ -17,7 +22,6 @@ func main() {
 
 	filePath := cliArgs[0]
 	file, err := os.Open(filePath)
-
 	if err != nil {
 		fmt.Println("Error opening the input file")
 
@@ -28,12 +32,6 @@ func main() {
 	scanner := bufio.NewScanner(file)
 
 	for scanner.Scan() {
-		/*
-			args := scanner.Text()
-			argList := strings.Fields(args)
-
-			Add your code here to process the input commands
-		*/
-
+		handler.Handle(ctx, os.Stdout, scanner.Text())
 	}
 }
