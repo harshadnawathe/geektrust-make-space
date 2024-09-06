@@ -63,6 +63,11 @@ INCORRECT_INPUT
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			osArgs := os.Args
+			defer func() {
+				os.Args = osArgs
+			}()
+
 			os.Args = []string{"geektrust", tt.input}
 
 			got := captureStdout(main)
