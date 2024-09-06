@@ -9,11 +9,6 @@ import (
 	"strings"
 )
 
-const (
-	incorrectInput       = "INCORRECT_INPUT"
-	internalServiceError = "INTERNAL_SERVICE_ERROR"
-	noVacantRoom         = "NO_VACANT_ROOM"
-)
 
 var vacancyCommandPattern = regexp.MustCompile(`^VACANCY\s+(\d\d:\d\d)\s+(\d\d:\d\d)$`)
 
